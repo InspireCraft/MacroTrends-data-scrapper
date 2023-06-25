@@ -17,7 +17,17 @@ Automatization of the Magic formula using Python. The ground truth output is in 
 ## PARAMETERS
 1. JSON files
 
-## TODO - PLANNING 
+## TODO - PLANNING
+1. Web interface class (shared) (Utku) -> REUSABLE CODE 
+2. Logger to be included in the classes (Alp)
+2. Retrieving company names based on some parameters (parameters are in JSON file) (Utku)
+3. Given company names, get the desired statistics (Alp)
+4. Calculate the necessary formula parameters, given company statistics (RAFIL)
+5. Using all the data, create an automated excel file (with report) (tbd)
 
-1. 
-2. 
+
+## Coding Practices 
+1. OOP approach
+2. Code should be as abstract as possible, depending on the parameters in JSON files
+3. Each class will have a test defined
+4. Tests should be called automatically 
