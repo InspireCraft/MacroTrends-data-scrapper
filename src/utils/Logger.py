@@ -47,7 +47,7 @@ class Logger(logging.Logger):
         # Add console handler to logger
         self.addHandler(console_handler)
 
-    def logToFile(self, filename: str, formatter=None):
+    def log_to_file(self, filename: str, formatter=None):
         """Also dumps the logs to the file."""
         if formatter is None:
             formatter = self.console_formatter
