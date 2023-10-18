@@ -19,6 +19,7 @@ colorlog_format = '%(log_color)s %(name)s: [%(levelname)s] - %(message)s'
 
 
 class Logger(logging.Logger):
+    """Wrapper to the logging.Logger with an easier constructor."""
 
     def __init__(self, name: str, logging_level_str: str = 'none'):
 
@@ -47,6 +48,7 @@ class Logger(logging.Logger):
         self.addHandler(console_handler)
 
     def logToFile(self, filename: str, formatter=None):
+        """Also dumps the logs to the file."""
         if formatter is None:
             formatter = self.console_formatter
 
@@ -61,17 +63,3 @@ if __name__ == "__main__":
     logger = Logger('LoggerFunctionality', 'debug')
     logger.info("Deneme -> Info")
     logger.debug("Deneme -> Debug")
-
-
-def createLogger(name, logging_level_str='critical', filename='logging.log'):
-    # Create a logger instance
-    logger = logging.getLogger(name)
-    # Set the logging level
-    if logging_level_str in ['none', 'critical']:
-        logger.setLevel(logging.CRITICAL + 1)
-    elif logging_level_str in ['info']:
-        logger.setLevel(logging.INFO)
-    elif logging_level_str in ['debug']:
-        logger.setLevel(logging.DEBUG)
-    else:
-        raise (KeyError('Check logging_level_str'))
