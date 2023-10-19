@@ -1,0 +1,21 @@
+name: Testing (unittest framework)
+
+on: [push]
+
+jobs:
+  testing_code:
+    name: Test code using unittest framework
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install Python package dependencies 
+      run: pip install -r requirements.txt    
+    - name:  Run tests via discovery
+      run: python -m unittest discover tests --verbose
+
+
