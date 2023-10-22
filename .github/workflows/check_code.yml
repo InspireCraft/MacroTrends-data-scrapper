@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   lint_flake8:
-    name: Check Code
+    name: Check code
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
