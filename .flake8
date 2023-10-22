@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    .git,
+    .github,
+    __pycache__,
+    .vscode,
+    scripts
+max-line-length = 100
+docstring-convention=numpy
+ignore=D100,D104

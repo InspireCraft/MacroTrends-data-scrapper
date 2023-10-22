@@ -1,0 +1,21 @@
+name: Code Checking
+
+on: [push]
+
+jobs:
+  lint_flake8:
+    name: Check code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install Python developing tools 
+      run: pip install -r dev_requirements.txt    
+    - name: Linting - Run Flake8 
+      run: flake8 --config .flake8
+
+
