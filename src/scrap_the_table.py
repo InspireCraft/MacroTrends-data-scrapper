@@ -44,9 +44,6 @@ class TableScrapper:
         url : str
             website
 
-        tab_names: list of str
-            list of the names of the table tabs
-
         """
         self.url = url
         self.tab_names = [
@@ -59,6 +56,7 @@ class TableScrapper:
 
         Parameters
         ----------
+        None
 
         Returns
         -------
