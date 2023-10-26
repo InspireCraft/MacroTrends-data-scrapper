@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 
 
-class ScrapTable:
+class TableScrapper:
     """
     Class to be used to scrap the table data in macro-trends.
 
