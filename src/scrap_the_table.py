@@ -48,7 +48,7 @@ class TableScrapper:
             "overview", 'descriptive', "dividend", "performance_st", "performance_lt",
             "ratios_income", "ratios_debt", "rev_earnings"]
 
-    def get_table_headers(self):
+    def _get_table_headers(self):
         """
         Get headers for each tab. tabs=[overview, descriptive, dividends, ..., revenue&earnings].
 
@@ -76,7 +76,7 @@ class TableScrapper:
 
         return header_list
 
-    def get_num_of_items(self):
+    def _get_num_of_items(self):
         """
         Check current item number, max item number in current page, total item number.
 
@@ -109,12 +109,12 @@ class TableScrapper:
             dictionary of the companies associated with their properties
         """
         print('SCRAPPING STARTED...')
-        (init_num, final_num, max_num) = self.get_num_of_items()
+        (init_num, final_num, max_num) = self._get_num_of_items()
         company_attr_dict = {}
-        header_list = self.get_table_headers()
+        header_list = self._get_table_headers()
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
-                (init_num, final_num, _) = self.get_num_of_items()
+                (init_num, final_num, _) = self._get_num_of_items()
 
                 # Construct dict by creating company tickers
                 for row_index in range(final_num - init_num + 1):
