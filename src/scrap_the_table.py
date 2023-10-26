@@ -101,7 +101,7 @@ class TableScrapper:
 
         return header_list
 
-    def _get_num_of_items(self, driver):
+    def _get_num_of_items(self, driver) -> tuple(int, int, int):
         """
         Check current item number, max item number in current page, total item number.
 
