@@ -74,7 +74,7 @@ class TableScrapper:
 
     def _get_table_headers(self, driver):
         """
-        Get headers for each tab. tabs=[overview, descriptive, dividends, ..., revenue&earnings].
+        Get headers for each tab. tabs=self.tab_names.
 
         Parameters
         ----------
