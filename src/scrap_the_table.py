@@ -67,7 +67,7 @@ class TableScrapper:
         """
         print('Driver is being set...')
         options = Options()
-        options.add_argument("--headless")  # Run selenium under headless mode
+        options.add_argument("--headless")  # Run selenium without opening an actual browser
 
         driver = webdriver.Chrome(options=options)  # Initialize the driver instance
         driver.get(self.url)
