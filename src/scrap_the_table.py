@@ -5,8 +5,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
+from utils.Logger import *
 
+logger = Logger('LoggerFunctionality', 'info')
 
+#TODO: INTERACTIVE REBASE
 class TableScrapper:
     """
     Class to be used to scrap the table data in macro-trends.
@@ -63,13 +66,13 @@ class TableScrapper:
         driver : obj
             WebDriver object
         """
-        print('Driver is being set...')
+        logger.info("WebDriver is being set...")
         options = Options()
         options.add_argument("--headless")  # Run selenium without opening an actual browser
 
         driver = webdriver.Chrome(options=options)  # Initialize the driver instance
         driver.get(self.url)
-        print('Driver is set!!!')
+        logger.info("WebDriver is set!!!")
         return driver
 
     def _get_table_headers(self, driver):
@@ -101,7 +104,7 @@ class TableScrapper:
 
         return header_list
 
-    def _get_num_of_items(self, driver) -> tuple(int, int, int):
+    def _get_num_of_items(self, driver):
         """
         Check current item number, max item number in current page, total item number.
 
@@ -135,13 +138,13 @@ class TableScrapper:
             dictionary of the companies associated with their properties
         """
         driver = self._set_driver()
-        print('SCRAPPING STARTED...')
-        (init_num, final_num, max_num) = self._get_num_of_items()
+        logger.info("SCRAPPING STARTED...")
+        (init_num, final_num, max_num) = self._get_num_of_items(driver)
         company_attr_dict = {}
-        header_list = self._get_table_headers()
+        header_list = self._get_table_headers(driver)
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
-                (init_num, final_num, _) = self._get_num_of_items()
+                (init_num, final_num, _) = self._get_num_of_items(driver)
 
                 # Construct dict by creating company tickers
                 for row_index in range(final_num - init_num + 1):
@@ -194,4 +197,6 @@ class TableScrapper:
                 WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
                     (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
                                "div[4]/div"))).click()
+
+        logger.info("SCRAPPING IS DONE...")
         return company_attr_dict
