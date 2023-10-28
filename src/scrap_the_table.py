@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
-from utils.Logger import *
+from utils.Logger import Logger
 
 
 #TODO: ADD TESTING - str INPUT FOR LOGGER IN CLASS
@@ -122,7 +122,7 @@ class TableScrapper:
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        driver = self._set_driver()
+        driver = self._create_driver()
         self.logger.info("SCRAPPING STARTED...")
         (init_num, final_num, max_num) = self._get_num_of_items(driver)
         company_attr_dict = {}
