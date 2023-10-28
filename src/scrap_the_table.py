@@ -53,8 +53,8 @@ class TableScrapper:
 
         Returns
         -------
-        driver : obj
-            WebDriver object
+        driver : WebDriver object
+        
         """
         self.logger.info("WebDriver is being created...")
         options = Options()
