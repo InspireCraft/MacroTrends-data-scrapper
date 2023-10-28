@@ -7,9 +7,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from utils.Logger import *
 
-logger = Logger('LoggerFunctionality', 'info')
 
-#TODO: INTERACTIVE REBASE
+#TODO: ADD TESTING - str INPUT FOR LOGGER IN CLASS
 class TableScrapper:
     """
     Class to be used to scrap the table data in macro-trends.
@@ -38,7 +37,7 @@ class TableScrapper:
 
     """
 
-    def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener'):
+    def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener', str_logger="info"):
         """
         Construct necessary parameters.
 
@@ -52,6 +51,7 @@ class TableScrapper:
         self.tab_names = [
             "overview", 'descriptive', "dividend", "performance_st", "performance_lt",
             "ratios_income", "ratios_debt", "rev_earnings"]
+        self.logger = Logger('LoggerFunctionality', str_logger)
 
     def _set_driver(self):
         """
@@ -66,16 +66,16 @@ class TableScrapper:
         driver : obj
             WebDriver object
         """
-        logger.info("WebDriver is being set...")
+        self.logger.info("WebDriver is being created...")
         options = Options()
         options.add_argument("--headless")  # Run selenium without opening an actual browser
 
         driver = webdriver.Chrome(options=options)  # Initialize the driver instance
         driver.get(self.url)
-        logger.info("WebDriver is set!!!")
+        self.logger.info("WebDriver is created!!!")
         return driver
 
-    def _get_table_headers(self, driver):
+    def _get_table_headers(self, driver: webdriver.Chrome):
         """
         Get headers for each tab. tabs=self.tab_names.
 
@@ -104,7 +104,7 @@ class TableScrapper:
 
         return header_list
 
-    def _get_num_of_items(self, driver):
+    def _get_num_of_items(self, driver) -> "tuple[int,int,int]":
         """
         Check current item number, max item number in current page, total item number.
 
@@ -138,7 +138,7 @@ class TableScrapper:
             dictionary of the companies associated with their properties
         """
         driver = self._set_driver()
-        logger.info("SCRAPPING STARTED...")
+        self.logger.info("SCRAPPING STARTED...")
         (init_num, final_num, max_num) = self._get_num_of_items(driver)
         company_attr_dict = {}
         header_list = self._get_table_headers(driver)
@@ -198,5 +198,5 @@ class TableScrapper:
                     (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
                                "div[4]/div"))).click()
 
-        logger.info("SCRAPPING IS DONE...")
+        self.logger.info("SCRAPPING IS DONE!!!")
         return company_attr_dict
