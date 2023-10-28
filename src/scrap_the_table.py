@@ -10,42 +10,33 @@ from utils.Logger import *
 
 #TODO: ADD TESTING - str INPUT FOR LOGGER IN CLASS
 class TableScrapper:
-    """
-    Class to be used to scrap the table data in macro-trends.
+    """Class to be used to scrap the table data in macro-trends.
 
-    Attributes
-    ----------
-    url : str
-        Website
+        Attributes
+        ----------
+        url : str
+            Website url
 
-    tab_names : list of str
-        list of the names of the table tabs
+        tab_names : list of str
+            list of the names of the table tabs
 
-    Methods
-    -------
-    _set_driver():
-        return the WebDriver object
+        logger : Logger object
 
-    _get_table_headers(driver):
-        return the headers corresponding to each tab
+        Methods
+        -------
+        scrap_the_table():
+            return the table data in dictionary format
 
-    _get_num_of_items(driver):
-        return the (current_item_number,max_item_number_in_that_page,total_num_of_items)
-
-    _scrap_the_table():
-        return the table data in dictionary format
-
-    """
+        """
 
     def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener', str_logger="info"):
         """
-        Construct necessary parameters.
-
         Parameters
         ----------
         url : str
-            website
-
+              the url of the website that is going to be scrapped
+        str_logger : str
+              the functionality string of the logger object
         """
         self.url = url
         self.tab_names = [
@@ -54,8 +45,7 @@ class TableScrapper:
         self.logger = Logger('LoggerFunctionality', str_logger)
 
     def _set_driver(self):
-        """
-        Set driver settings.
+        """Set driver settings.
 
         Parameters
         ----------
@@ -76,13 +66,11 @@ class TableScrapper:
         return driver
 
     def _get_table_headers(self, driver: webdriver.Chrome):
-        """
-        Get headers for each tab. tabs=self.tab_names.
+        """Get headers for each tab. tabs=self.tab_names.
 
         Parameters
         ----------
-        driver : obj
-            WebDriver object
+        driver : WebDriver object
 
         Returns
         -------
@@ -105,13 +93,11 @@ class TableScrapper:
         return header_list
 
     def _get_num_of_items(self, driver) -> "tuple[int,int,int]":
-        """
-        Check current item number, max item number in current page, total item number.
+        """Check current item number, max item number in current page, total item number.
 
         Parameters
         ----------
-        driver : obj
-            WebDriver object
+        driver : WebDriver object
 
         Returns
         -------
@@ -125,8 +111,7 @@ class TableScrapper:
         return current_initial_number, current_final_number, number_of_item_in_the_list
 
     def scrap_the_table(self):
-        """
-        Scraps the whole table including all tabs and pages in macro-trend.
+        """Scrap the whole table including all tabs and pages in macro-trend.
 
         Parameters
         ----------
@@ -134,7 +119,7 @@ class TableScrapper:
 
         Returns
         -------
-        company_attr_dict : dictionary
+        company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
         driver = self._set_driver()
@@ -200,3 +185,9 @@ class TableScrapper:
 
         self.logger.info("SCRAPPING IS DONE!!!")
         return company_attr_dict
+
+
+if __name__ == "__main__":
+    scrapper = TableScrapper()
+    scrapped_data = scrapper.scrap_the_table()
+
