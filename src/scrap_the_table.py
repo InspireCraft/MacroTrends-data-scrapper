@@ -92,8 +92,8 @@ class TableScrapper:
 
         return header_list
 
-    def _get_num_of_items(self, driver) -> "tuple[int,int,int]":
-        """Check current item number, max item number in current page, total item number.
+    def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
+        """Check current row number, max row number in current page, total row number.
 
         Parameters
         ----------
@@ -101,14 +101,14 @@ class TableScrapper:
 
         Returns
         -------
-        current_initial_number, current_final_number, number_of_item_in_the_list : tuple of ints
+        current_initial_number, current_final_number, number_of_rows_in_the_list : tuple of ints
 
         """
         temp = driver.find_elements(By.XPATH, "// *[ @ id = 'pagerjqxGrid'] / div / div[6]")
         current_initial_number = int(temp[0].text.split("-")[0])
         current_final_number = int(temp[0].text.split("-")[1].split(" ")[0])
-        number_of_item_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
-        return current_initial_number, current_final_number, number_of_item_in_the_list
+        number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
+        return current_initial_number, current_final_number, number_of_rows_in_the_list
 
     def scrap_the_table(self):
         """Scrap the whole table including all tabs and pages in macro-trend.
@@ -124,12 +124,12 @@ class TableScrapper:
         """
         driver = self._create_driver()
         self.logger.info("SCRAPPING STARTED...")
-        (init_num, final_num, max_num) = self._get_num_of_items(driver)
+        (init_num, final_num, max_num) = self._get_num_of_rows(driver)
         company_attr_dict = {}
         header_list = self._get_table_headers(driver)
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
-                (init_num, final_num, _) = self._get_num_of_items(driver)
+                (init_num, final_num, _) = self._get_num_of_rows(driver)
 
                 # Construct dict by creating company tickers
                 for row_index in range(final_num - init_num + 1):
