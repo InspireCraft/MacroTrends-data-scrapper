@@ -44,7 +44,7 @@ class TableScrapper:
             "ratios_income", "ratios_debt", "rev_earnings"]
         self.logger = Logger('LoggerFunctionality', str_logger)
 
-    def _set_driver(self):
+    def _create_driver(self):
         """Set driver settings.
 
         Parameters
