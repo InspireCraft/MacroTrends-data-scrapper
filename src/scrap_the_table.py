@@ -8,29 +8,31 @@ from selenium import webdriver
 from utils.Logger import Logger
 
 
-#TODO: ADD TESTING - str INPUT FOR LOGGER IN CLASS
 class TableScrapper:
-    """Class to be used to scrap the table data in macro-trends.
+    """
+    Class to be used to scrap the table data in macro-trends.
 
-        Attributes
-        ----------
-        url : str
-            Website url
+    Attributes
+    ----------
+    url : str
+        Website url
 
-        tab_names : list of str
-            list of the names of the table tabs
+    tab_names : list of str
+        list of the names of the table tabs
 
-        logger : Logger object
+    logger : Logger object
 
-        Methods
-        -------
-        scrap_the_table():
-            return the table data in dictionary format
+    Methods
+    -------
+    scrap_the_table():
+        return the table data in dictionary format
 
-        """
+    """
 
     def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener', str_logger="info"):
         """
+        Construct instant variables.
+
         Parameters
         ----------
         url : str
@@ -190,4 +192,3 @@ class TableScrapper:
 if __name__ == "__main__":
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
-
