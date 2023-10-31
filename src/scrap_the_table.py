@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
-from utils.Logger import Logger
+from src.utils.Logger import Logger
 
 
 class TableScrapper:
