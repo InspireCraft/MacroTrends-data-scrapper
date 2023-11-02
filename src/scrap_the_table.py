@@ -93,6 +93,13 @@ class TableScrapper:
             WebDriverWait(driver, 10).until(
                 ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))).click()
             table_headers = driver.find_elements(By.XPATH, "//*[@id='columntablejqxGrid']/div")
+
+            # Each tab has headers which are the column descriptors of the table
+            # Each tab's first two header is the company name and company ticker
+            # In order not to collect same header for each tab
+            # first two headers are excluded from the other tabs
+            # Hence, for overview tab, everything is collected
+            # for the other tabs, first two excluded and rest is collected.
             if name == "overview":
                 temp_list = [elem.text for elem in table_headers]
             else:
