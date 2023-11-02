@@ -46,8 +46,11 @@ class TableScrapper:
             "ratios_income", "ratios_debt", "rev_earnings"]
         self.logger = Logger(self.__class__.__name__, str_logger)
 
-    def _create_driver(self):
-        """Set driver settings.
+    def _create_driver(self) -> "webdriver.chrome":
+        """Create driver object.
+
+        Driver is an WebDriver object that interacts with the website. Clicking,
+        reading are the methods of the driver object.
 
         Parameters
         ----------
@@ -203,6 +206,11 @@ class TableScrapper:
         return company_attr_dict
 
 
-if __name__ == "__main__":
+def main():
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
+    return scrapped_data
+
+
+if __name__ == "__main__":
+    main()
