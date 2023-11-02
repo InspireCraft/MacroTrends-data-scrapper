@@ -44,7 +44,7 @@ class TableScrapper:
         self.tab_names = [
             "overview", 'descriptive', "dividend", "performance_st", "performance_lt",
             "ratios_income", "ratios_debt", "rev_earnings"]
-        self.logger = Logger('LoggerFunctionality', str_logger)
+        self.logger = Logger(self.__class__.__name__, str_logger)
 
     def _create_driver(self):
         """Set driver settings.
