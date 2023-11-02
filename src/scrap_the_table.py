@@ -207,6 +207,13 @@ class TableScrapper:
 
 
 def main():
+    """Run the TableScrapper.
+
+    Returns
+    -------
+    scrapped_data : dict
+        Dictionary of the table in the given url
+    """
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
     return scrapped_data
