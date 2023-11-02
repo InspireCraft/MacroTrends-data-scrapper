@@ -83,6 +83,13 @@ class TableScrapper:
         header_list = {}
         for name in self.tab_names:
             temp_list = []
+            # Each tab's XPATH has "id" given in the form below:
+            # id = "columns_<name_of_the_tab>"
+            # e.g. for tab "overview", id='columns_overview'
+            # To click a tab object, an XPATH -adress of the tab object- is required
+            # e.g. "*[@id='columns_overview']/a" => this is the XPATH for clickable overview tab
+            # The command below waits upto 10 secs for the given tab object is clickable
+            # Then if it is clickable it clicks on it.
             WebDriverWait(driver, 10).until(
                 ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))).click()
             table_headers = driver.find_elements(By.XPATH, "//*[@id='columntablejqxGrid']/div")
