@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from src.utils.Logger import Logger
 import json
+import os
 
 
 class TableScrapper:
@@ -42,7 +43,8 @@ class TableScrapper:
               the functionality string of the logger object
         """
         self.url = url
-        self.config = json.load(open("utils\\config.json"))
+        self.rootdir = os.getcwd()
+        self.config = json.load(open(f"{self.rootdir}\\utils\\config.json"))
         self.tab_names = [elem for elem in self.config["tab_names"].keys()]
         self.logger = Logger(self.__class__.__name__, str_logger)
 
