@@ -3,7 +3,7 @@ from src.scrap_the_table import TableScrapper
 import selenium
 
 
-class TableScrapperTestCase(unittest.TestCase):
+class TestTableScrapper(unittest.TestCase):
     """Class to be used to test TableScrapper class.
 
     Methods
