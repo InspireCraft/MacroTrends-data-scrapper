@@ -6,6 +6,7 @@ from tqdm import tqdm
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from src.utils.Logger import Logger
+import json
 
 
 class TableScrapper:
@@ -41,9 +42,8 @@ class TableScrapper:
               the functionality string of the logger object
         """
         self.url = url
-        self.tab_names = [
-            "overview", 'descriptive', "dividend", "performance_st", "performance_lt",
-            "ratios_income", "ratios_debt", "rev_earnings"]
+        self.config = json.load(open("utils\\config.json"))
+        self.tab_names = [elem for elem in self.config["tab_names"].keys()]
         self.logger = Logger(self.__class__.__name__, str_logger)
 
     def _create_driver(self) -> "webdriver.chrome":
