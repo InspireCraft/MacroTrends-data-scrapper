@@ -97,16 +97,7 @@ class TableScrapper:
                 ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))).click()
             table_headers = driver.find_elements(By.XPATH, "//*[@id='columntablejqxGrid']/div")
 
-            # Each tab has headers which are the column descriptors of the table
-            # Each tab's first two header is the company name and company ticker
-            # In order not to collect same header for each tab
-            # first two headers are excluded from the other tabs
-            # Hence, for overview tab, everything is collected
-            # for the other tabs, first two excluded and rest is collected.
-            if name == "overview":
-                temp_list = [elem.text for elem in table_headers]
-            else:
-                temp_list = [elem.text for elem in table_headers[2:]]
+            temp_list = [elem.text for elem in table_headers[2:]]
             header_list[name] = temp_list
 
         return header_list
@@ -172,30 +163,17 @@ class TableScrapper:
                         ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))) \
                         .click()
 
-                    if name == "overview":
-                        for column_index in range(len(header_list[name]) - 2):
-                            for row_index in range(final_num - init_num + 1):
-                                com_tck = list(company_attr_dict.keys())[
-                                    int(init_num + row_index - 1)]
-                                attr = driver.find_elements(
-                                    By.XPATH,
-                                    f"//*[@id="
-                                    f"'row{row_index}jqxGrid']/div[{int(3 + column_index)}]/div")[
-                                    0].text
-                                company_attr_dict[com_tck][header_list[name][
-                                    int(2 + column_index)]] = attr
-                    else:
-                        for column_index in range(len(header_list[name])):
-                            for row_index in range(final_num - init_num + 1):
-                                com_tck = list(company_attr_dict.keys())[
-                                    int(init_num + row_index - 1)]
-                                attr = driver.find_elements(
-                                    By.XPATH,
-                                    f"//*[@id='row{row_index}jqxGrid']/"
-                                    f"div[{int(3 + column_index)}]/div")[
-                                    0].text
-                                company_attr_dict[com_tck][header_list[name][
-                                    int(column_index)]] = attr
+                    for column_index in range(len(header_list[name])):
+                        for row_index in range(final_num - init_num + 1):
+                            com_tck = list(company_attr_dict.keys())[
+                                int(init_num + row_index - 1)]
+                            attr = driver.find_elements(
+                                By.XPATH,
+                                f"//*[@id='row{row_index}jqxGrid']/"
+                                f"div[{int(3 + column_index)}]/div")[
+                                0].text
+                            company_attr_dict[com_tck][header_list[name][
+                                int(column_index)]] = attr
 
                 pbar.update(20)
                 WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
