@@ -27,11 +27,11 @@ class TestTableScrapper(unittest.TestCase):
     def setUp(self):
         """Set up reused variables/objects."""
         self.scrapper = TableScrapper()
-        self.driver = self.scrapper._create_driver()
 
     def test_create_driver(self):
         """Check if the created driver object is WebDriver object."""
         # Check if self.driver is a WebDriver object
+        self.driver = self.scrapper._create_driver()
         self.assertIsInstance(self.driver, selenium.webdriver.chrome.webdriver.WebDriver)
 
     def test_get_table_headers(self):
@@ -40,6 +40,7 @@ class TestTableScrapper(unittest.TestCase):
         Check if all the headers (corresponding to tabs) are scrapped or not
 
         """
+        self.driver = self.scrapper._create_driver()
         self.header_list = self.scrapper._get_table_headers(self.driver)
         # Check if self.header_list is a dictionary
         self.assertIsInstance(self.header_list, dict)
@@ -88,6 +89,7 @@ class TestTableScrapper(unittest.TestCase):
         Check the magnitude relationship of the numbers
 
         """
+        self.driver = self.scrapper._create_driver()
         (self.init, self.last, self.total) = self.scrapper._get_num_of_rows(self.driver)
         # Check if the row number types are integer
         self.assertIsInstance(self.init, int)
