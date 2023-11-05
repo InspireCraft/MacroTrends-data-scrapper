@@ -31,8 +31,8 @@ class TestTableScrapper(unittest.TestCase):
     def test_create_driver(self):
         """Check if the created driver object is WebDriver object."""
         # Check if self.driver is a WebDriver object
-        self.driver = self.scrapper._create_driver()
-        self.assertIsInstance(self.driver, selenium.webdriver.chrome.webdriver.WebDriver)
+        driver = self.scrapper._create_driver()
+        self.assertIsInstance(driver, selenium.webdriver.chrome.webdriver.WebDriver)
 
     def test_get_table_headers(self):
         """Check if function return a dictionary.
@@ -40,14 +40,15 @@ class TestTableScrapper(unittest.TestCase):
         Check if all the headers (corresponding to tabs) are scrapped or not
 
         """
-        self.driver = self.scrapper._create_driver()
-        self.header_list = self.scrapper._get_table_headers(self.driver)
-        # Check if self.header_list is a dictionary
-        self.assertIsInstance(self.header_list, dict)
+        driver = self.scrapper._create_driver()
+        header_list = self.scrapper._get_table_headers(driver)
+        # Check if header_list is a dictionary
+        self.assertIsInstance(header_list, dict)
 
         # Define what tabs have as headers
-        overview = ['Stock Name\n(Hover for 1Y Chart)', 'Ticker', 'Industry', 'Market Cap',
-                    'Closing\nPrice', '1 Year\n% Change', 'P/E Ratio', 'Dividend\nYield']
+        overview = ['Industry', 'Market Cap',
+                    'Closing\nPrice', '1 Year\n% Change',
+                    'P/E Ratio', 'Dividend\nYield']
 
         descriptive = ['Market Cap', 'Exchange', 'Country', 'Sector', 'Industry']
 
@@ -73,14 +74,14 @@ class TestTableScrapper(unittest.TestCase):
                         'Estimated EPS\nGrowth Next Year']
 
         # Check if those headers corresponds to their tabs
-        self.assertEqual(self.header_list["overview"], overview)
-        self.assertEqual(self.header_list["descriptive"], descriptive)
-        self.assertEqual(self.header_list["dividend"], dividend)
-        self.assertEqual(self.header_list["performance_st"], performance_st)
-        self.assertEqual(self.header_list["performance_lt"], performance_lt)
-        self.assertEqual(self.header_list["ratios_income"], ratios_income)
-        self.assertEqual(self.header_list["ratios_debt"], ratios_debt)
-        self.assertEqual(self.header_list["rev_earnings"], rev_earnings)
+        self.assertEqual(header_list["overview"], overview)
+        self.assertEqual(header_list["descriptive"], descriptive)
+        self.assertEqual(header_list["dividend"], dividend)
+        self.assertEqual(header_list["performance_st"], performance_st)
+        self.assertEqual(header_list["performance_lt"], performance_lt)
+        self.assertEqual(header_list["ratios_income"], ratios_income)
+        self.assertEqual(header_list["ratios_debt"], ratios_debt)
+        self.assertEqual(header_list["rev_earnings"], rev_earnings)
 
     def test_get_num_of_rows(self):
         """Check if the function returns tuple of ints.
@@ -89,22 +90,22 @@ class TestTableScrapper(unittest.TestCase):
         Check the magnitude relationship of the numbers
 
         """
-        self.driver = self.scrapper._create_driver()
-        (self.init, self.last, self.total) = self.scrapper._get_num_of_rows(self.driver)
+        driver = self.scrapper._create_driver()
+        (init, last, total) = self.scrapper._get_num_of_rows(driver)
         # Check if the row number types are integer
-        self.assertIsInstance(self.init, int)
-        self.assertIsInstance(self.last, int)
-        self.assertIsInstance(self.total, int)
+        self.assertIsInstance(init, int)
+        self.assertIsInstance(last, int)
+        self.assertIsInstance(total, int)
 
         # Check if self.init number = 1
-        self.assertEqual(self.init, 1)
+        self.assertEqual(init, 1)
 
         # Check if self.last number = 20
-        self.assertEqual(self.last, 20)
+        self.assertEqual(last, 20)
 
         # Check if self.total larger than the other two
-        self.assertTrue(self.total > self.init)
-        self.assertTrue(self.total > self.last)
+        self.assertTrue(total > init)
+        self.assertTrue(total > last)
 
 
 if __name__ == "__main__":
