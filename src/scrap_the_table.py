@@ -42,7 +42,7 @@ class TableScrapper:
               the functionality string of the logger object
         """
         self.url = url
-        f = open("../src/config.json")
+        f = open("src/config.json")
         config = json.load(f)
         f.close()
         self.tab_names = [elem for elem in config["tab_names"].keys()]
