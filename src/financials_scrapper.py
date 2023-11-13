@@ -9,7 +9,7 @@ import pandas as pd
 _TABS = ["income-statement", "balance-sheet", "cash-flow-statement", "financial-ratios"]
 
 
-def _parse_strings_to_floats(element_list: list[WebElement]):
+def _convert_strings_to_floats(element_list: list[WebElement]):
     parsed_floats = [float(re.sub(r'[^\d,]', '', s.accessible_name).replace(',', '.'))
                      if s.accessible_name and re.sub(r'[^\d.]', '', s.accessible_name)
                      else float("nan") for s in element_list]
@@ -33,6 +33,7 @@ class FinancialDataScraper:
     def __init__(self, logging_level_str: str = "none"):
         self.logger = Logger("FinancialDataScrapper", logging_level_str)
         self.logger.info("Initialized.")
+        self.row_indices = []
 
     def scrap_company_financials(self, ticker: str, name: str, financial_properties: list):
         """Scrap."""
@@ -68,13 +69,27 @@ class FinancialDataScraper:
                 if financial_property_name in financial_properties:
                     self.logger.debug(
                         "Found '" + financial_property_name + "' in '" + report_name + "'.")
-                    # Parse the WebElements.accessible_name
-                    parsed_floats = list(
-                        filter(_is_not_nan, _parse_strings_to_floats(child_elements[1:])))
+                    # Convert the WebElements.accessible_name to float representation
+                    accesible_names_float = _convert_strings_to_floats(child_elements[1:])
 
+                    # For each financial_property we would get the same indices,
+                    # so calculate and store it in self.row_indices
+                    # TODO: self.row_indices makes sense if this class is re-used
+                    # for additional scrapping, otherwise it can be a local variable.
+                    # It should be checked if self.row_indices can be used when
+                    # scrapping different company financial data.
+                    if len(self.row_indices) == 0:
+                        valid_float_indices = [idx for (idx, val) in
+                                               enumerate(accesible_names_float)
+                                               if _is_not_nan(val)]
+                        valid_float_values = filter(_is_not_nan, accesible_names_float)
+                        self.row_indices = valid_float_indices
+                    else:
+                        valid_float_values = [accesible_names_float[valid_idx]
+                                              for valid_idx in self.row_indices]
                     # Create a Dataframe object
                     df = pd.DataFrame({'Date': dates_of_columns,
-                                       financial_property_name: parsed_floats})
+                                       financial_property_name: valid_float_values})
 
                     # Key is the financial property itself
                     scrapped_data[financial_property_name] = df
