@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
-from utils.Logger import Logger
+from src.utils.Logger import Logger
 from functools import reduce
 import re
 from pandas import DataFrame, merge
@@ -176,10 +176,15 @@ class FinancialDataScraper:
         return webdriver.Chrome(options=options)
 
 
-if __name__ == "__main__":
+def main():
+    """Demonstrate example usage."""
     financials_scrapper = FinancialDataScraper("debug")
     scrapped_data = financials_scrapper.scrap_financials(
         ["AAPL", "MSFT"],
         ["apple", "microsoft"],
         ["EBIT", "Total Current Assets", "Invalid-Field"])
     print(scrapped_data)
+
+
+if __name__ == "__main__":
+    main()
