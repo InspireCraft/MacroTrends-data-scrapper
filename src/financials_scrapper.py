@@ -32,10 +32,10 @@ class FinancialDataScraper:
     _TABS = ["income-statement", "balance-sheet", "cash-flow-statement", "financial-ratios"]
 
     def __init__(self, logging_level_str: str = "none"):
-        self.logger = Logger("FinancialDataScrapper", logging_level_str)
-        self.logger.info("Initialized.")
-        self.row_indices = []
-        self.driver = FinancialDataScraper._create_webdriver()
+        self._logger = Logger("FinancialDataScrapper", logging_level_str)
+        self._logger.info("Initialized.")
+        self._row_indices = []
+        self._driver = FinancialDataScraper._create_webdriver()
 
     def scrap_financials(self,
                          ticker_list: list[str],
@@ -79,45 +79,45 @@ class FinancialDataScraper:
         # For each company, visit each tab and retrieve the data from the financial properties,
         # along with the date information
         for report_name in self._TABS:
-            self.logger.debug(logger_company_header + "Searching through '" + report_name + "'...")
+            self._logger.debug(logger_company_header + "Searching through '" + report_name + "'...")
             # There is a table in each url,
             url_to_visit = _get_fixed_url_pattern(ticker=ticker,
                                                   name=company_name,
                                                   report_name=report_name)
-            self.logger.debug(logger_company_header + "Accessing " + url_to_visit + "...")
-            self.driver.get(url_to_visit)
+            self._logger.debug(logger_company_header + "Accessing " + url_to_visit + "...")
+            self._driver.get(url_to_visit)
             # the column row has id "columntable", and individual columns have id = "columnheader"
-            columns = self.driver.find_elements(By.CSS_SELECTOR, 'div[id*="columntable"]')
+            columns = self._driver.find_elements(By.CSS_SELECTOR, 'div[id*="columntable"]')
             column_headers = columns[0].find_elements(By.CSS_SELECTOR, "div[role=columnheader]")
             dates_of_columns = [web_element.accessible_name for web_element in
                                 filter(self._is_date_pattern, column_headers)]
 
             # the rows have role and id set to "row"
-            row_element = self.driver.find_elements(By.CSS_SELECTOR, 'div[role="row"][id*="row"]')
+            row_element = self._driver.find_elements(By.CSS_SELECTOR, 'div[role="row"][id*="row"]')
             for row in row_element:
                 child_elements = row.find_elements(By.CSS_SELECTOR, 'div')
                 financial_property_name = child_elements[0].accessible_name
                 if financial_property_name in financial_properties:
                     logger_msg = "Found '" + financial_property_name + "' in '" + report_name + "'."
-                    self.logger.debug(logger_company_header + logger_msg)
+                    self._logger.debug(logger_company_header + logger_msg)
                     # Convert the WebElements.accessible_name to float representation
                     accesible_names_float = self._convert_strings_to_floats(child_elements[1:])
 
                     # For each financial_property we would get the same indices,
-                    # so calculate and store it in self.row_indices
-                    # TODO: self.row_indices makes sense if this class is re-used
+                    # so calculate and store it in self._row_indices
+                    # TODO: self._row_indices makes sense if this class is re-used
                     # for additional scrapping, otherwise it can be a local variable.
-                    # It should be checked if self.row_indices can be used when
+                    # It should be checked if self._row_indices can be used when
                     # scrapping different company financial data.
-                    if len(self.row_indices) == 0:
+                    if len(self._row_indices) == 0:
                         valid_float_indices = [idx for (idx, val) in
                                                enumerate(accesible_names_float)
                                                if _is_not_nan(val)]
                         valid_float_values = filter(_is_not_nan, accesible_names_float)
-                        self.row_indices = valid_float_indices
+                        self._row_indices = valid_float_indices
                     else:
                         valid_float_values = [accesible_names_float[valid_idx]
-                                              for valid_idx in self.row_indices]
+                                              for valid_idx in self._row_indices]
                     # Create a Dataframe object
                     df = DataFrame({'Date': dates_of_columns,
                                     financial_property_name: valid_float_values})
@@ -132,15 +132,15 @@ class FinancialDataScraper:
 
             if n_properties_to_scrap_current == 0:
                 logger_msg = "Scrapping is successful, every requested field is scrapped!"
-                self.logger.info(logger_company_header + logger_msg)
+                self._logger.info(logger_company_header + logger_msg)
                 break
 
         if n_properties_to_scrap_current > 0:
             financial_properties_not_found = [
                 item for item in financial_properties if item not in scrapped_data.keys()]
             logger_msg = "Following financial properties are not found:"
-            self.logger.debug(logger_company_header + logger_msg)
-            self.logger.debug(financial_properties_not_found)
+            self._logger.debug(logger_company_header + logger_msg)
+            self._logger.debug(financial_properties_not_found)
             if n_properties_to_scrap_current == n_properties_to_scrap_total:
                 return DataFrame()
 
@@ -150,7 +150,7 @@ class FinancialDataScraper:
 
     def __del__(self):
         """Close browser when the object is deleted."""
-        self.driver.quit()
+        self._driver.quit()
 
     @staticmethod
     def _convert_strings_to_floats(element_list: list[WebElement]):
