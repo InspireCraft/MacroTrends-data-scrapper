@@ -1,3 +1,4 @@
 colorlog==6.7.0
+pandas==2.0.2
 selenium==4.14
 tqdm==4.66.1
