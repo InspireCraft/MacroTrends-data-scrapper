@@ -1,0 +1,14 @@
+{
+  "options": ["--headless", "--no-sandbox", "--disable-dev-shm-usage", "--allow-insecure-remotehost",
+             "--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"],
+
+  "comments": ["This section is for the descriptions of the option arguments for webdriver",
+             "--headless: use webdriver without actually opening a web browser",
+             "--no-sandbox: do not restrict the environment/functionality where chrome works",
+             "--disable-dev-shm-usage: Prevent chrome fail or crash because of some unknown bugs",
+             "--allow-insecure-remotehost: Enables TLS/SSL errors on localhost to be ignored",
+             "--enable-webgl: ",
+             "--use-gl=angle: Select which implementation of GL the GPU process should use",
+             "--use-angle=swiftshader: swift shader software renderer",
+             "link to arguments : https://peter.sh/experiments/chromium-command-line-switches/"]
+}
