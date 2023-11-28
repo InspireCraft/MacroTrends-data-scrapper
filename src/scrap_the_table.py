@@ -125,7 +125,7 @@ class TableScrapper:
 
                     # Retrive the required information after clicking on the corresponding header
                     for row_index in range(final_num - init_num + 1):
-                        column_index = list(map_of_headers[name].values())[0]-1
+                        column_index = list(map_of_headers[name].values())[0] - 1
                         com_tck = list(company_attr_dict.keys())[
                             int(init_num + row_index - 1)]
                         attr = driver.find_elements(
@@ -167,4 +167,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
