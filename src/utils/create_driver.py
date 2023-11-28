@@ -1,7 +1,6 @@
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from src.utils.Logger import Logger
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import json
 import os
 
@@ -40,9 +39,14 @@ def create_driver(url, logger_str="info") -> "webdriver.chrome":
     for opt in opts:
         options.add_argument(opt)
 
+    # Below option enables web driver to be able to scrap when in headless mode
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' \
+                 ' (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
+    options.add_argument(f'user-agent={user_agent}')
+
     driver = webdriver.Chrome(options=options)
 
-    # Finalize driver creation by calling the url
+    # Finalize webdriver creation by calling the url
     driver.get(url)
     logger.info("WebDriver is created!!!")
     return driver
