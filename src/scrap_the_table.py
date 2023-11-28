@@ -8,6 +8,7 @@ import json
 from src.map_of_headers import map_of_headers
 from src.utils.create_driver import create_driver
 
+
 class TableScrapper:
     """
     Class to be used to scrap the table data in macro-trends.
@@ -41,16 +42,16 @@ class TableScrapper:
               the functionality string of the logger object
         """
         self.url = url
+        self.str_logger = str_logger
         self.logger = Logger(self.__class__.__name__, str_logger)
 
         # Read JSON file for parameters required to be searched
-        f_search = open("searchparameters.json")
+        f_search = open("..\\src\\searchparameters.json")
         search_dict = json.load(f_search)
         f_search.close()
 
         self.search_params = [elem for elem in search_dict["search_parameters"]]
         self.logger.info(f"Search Params = {self.search_params}...")
-
 
     def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
         """Check current row number, max row number in current page, total row number.
@@ -82,18 +83,22 @@ class TableScrapper:
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        driver = create_driver(self.url, self.logger)
+        # Create driver to scrap/interact with the website
+        driver = create_driver(self.url, self.str_logger)
         self.logger.info("SCRAPPING STARTED...")
-        ###
-        # FILTERING CAN BE INTEGRATED HERE
-        ###
+
+        # Get number of rows per page and total
         (init_num, final_num, max_num) = self._get_num_of_rows(driver)
+
+        # Initialize attribute dictionary
         company_attr_dict = {}
+
+        # Track the progress of the scrapping process with a progress bar
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
                 (init_num, final_num, _) = self._get_num_of_rows(driver)
 
-                # Construct dict by creating company tickers
+                # Construct dict by scrapping company tickers
                 for row_index in range(final_num - init_num + 1):
                     company_ticker = (
                         driver.find_elements(
@@ -130,13 +135,20 @@ class TableScrapper:
                             0].text
                         company_attr_dict[com_tck][name] = attr
 
+                # Update the progress bar
                 pbar.update(20)
+
+                # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
                     (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
                                "div[4]/div"))).click()
 
         self.logger.info("SCRAPPING IS DONE!!!")
         self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
+
+        # Shut down the driver
+        driver.close()
+        driver.quit()
         return company_attr_dict
 
 
@@ -155,3 +167,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
