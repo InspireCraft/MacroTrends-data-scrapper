@@ -21,7 +21,7 @@ class TestCreateDriver(unittest.TestCase):
     def test_create_driver(self):
         """Check if the created driver object is WebDriver object."""
         # Check if self.driver is a WebDriver object
-        driver = create_driver(self.url)
+        driver = create_driver(self.url, logger_str="none")
         self.assertIsInstance(driver, selenium.webdriver.chrome.webdriver.WebDriver)
         driver.close()
         driver.quit()
@@ -29,4 +29,3 @@ class TestCreateDriver(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(warnings='ignore')
-
