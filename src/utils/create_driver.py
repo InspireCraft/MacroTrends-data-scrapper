@@ -4,6 +4,7 @@ from src.utils.Logger import Logger
 import json
 import os
 
+
 def create_driver(url, logger_str="info") -> "webdriver.chrome":
     """Create driver object.
 
@@ -51,8 +52,11 @@ def create_driver(url, logger_str="info") -> "webdriver.chrome":
     logger.info("WebDriver is created!!!")
     return driver
 
+
 def main():
+    """Run create driver function."""
     return create_driver(url="https://www.macrotrends.net/stocks/stock-screener")
+
 
 if __name__ == "__main__":
     driver = main()
