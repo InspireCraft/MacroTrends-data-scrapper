@@ -25,8 +25,8 @@ def create_driver(url, logger_str="info") -> "webdriver.chrome":
     logger = Logger("create_driver", logger_str)
     logger.info("WebDriver is being created...")
 
-    os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-    f_search = open("..\\src\\utils\\webdriverOptions.json")
+    os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__))))
+    f_search = open("webdriverOptions.json")
     options_dict = json.load(f_search)
     f_search.close()
 
