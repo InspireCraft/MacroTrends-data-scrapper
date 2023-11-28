@@ -7,6 +7,7 @@ from src.utils.Logger import Logger
 import json
 from src.map_of_headers import map_of_headers
 from src.utils.create_driver import create_driver
+import os
 
 
 class TableScrapper:
@@ -46,7 +47,8 @@ class TableScrapper:
         self.logger = Logger(self.__class__.__name__, str_logger)
 
         # Read JSON file for parameters required to be searched
-        f_search = open("..\\src\\searchparameters.json")
+        os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+        f_search = open("src\\searchparameters.json")
         search_dict = json.load(f_search)
         f_search.close()
 
