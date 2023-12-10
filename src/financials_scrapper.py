@@ -8,40 +8,26 @@ import re
 from pandas import DataFrame, merge
 
 
-def _is_not_nan(val: float) -> bool:
-    # two nan's are not equal to each other
-    return not (val != val)
-
-
-def _zip_strict(*args):
-    """Only uses zip() on args if they have the same length, errors otherwise."""
-    arg_lens = [len(arg) for arg in args]
-    if len(set(arg_lens)) != 1:
-        raise ValueError("All input iterables must have the same length")
-    return zip(*args)
-
-
-def _get_fixed_url_pattern(ticker: str, name: str, report_name: str) -> str:
-    tail = ticker.upper() + "/" + name.lower() + "/" + report_name
-    return "https://www.macrotrends.net/stocks/charts/" + tail
-
-
 class FinancialDataScraper:
     """Scraps the financial data of companies, which are to be used in the Magic Formula."""
 
     _TABS = ["income-statement", "balance-sheet", "cash-flow-statement", "financial-ratios"]
 
-    def __init__(self, logging_level_str: str = "none"):
+    def __init__(
+        self,
+        logging_level_str: str = "none"
+    ):
         self._logger = Logger("FinancialDataScrapper", logging_level_str)
         self._logger.info("Initialized.")
         self._row_indices = []
         self._driver = FinancialDataScraper._create_webdriver()
 
-    def scrap_financials(self,
-                         ticker_list: list[str],
-                         company_name_list: list[str],
-                         financial_properties: list
-                         ) -> dict:
+    def scrap_financials(
+        self,
+        ticker_list: list[str],
+        company_name_list: list[str],
+        financial_properties: list
+    ) -> dict:
         """
         Scrap company financials for each company given in the list.
 
@@ -59,14 +45,16 @@ class FinancialDataScraper:
         """
         financial_data_dict = {
             ticker: self._scrap_company_financials(ticker, company_name, financial_properties)
-            for ticker, company_name in _zip_strict(ticker_list, company_name_list)}
+            for ticker, company_name in _zip_strict(ticker_list, company_name_list)
+        }
         return financial_data_dict
 
-    def _scrap_company_financials(self,
-                                  ticker: str,
-                                  company_name: str,
-                                  financial_properties: list
-                                  ) -> DataFrame:
+    def _scrap_company_financials(
+        self,
+        ticker: str,
+        company_name: str,
+        financial_properties: list
+    ) -> DataFrame:
         """Scrap a single company data and put it on a DataFrame."""
         scrapped_data = dict()
         # Check inputs
@@ -154,14 +142,16 @@ class FinancialDataScraper:
 
     @staticmethod
     def _convert_strings_to_floats(element_list: list[WebElement]):
-        parsed_floats = [float(re.sub(r'[^\d,]', '', s.accessible_name).replace(',', '.'))
-                         if s.accessible_name and re.sub(r'[^\d.]', '', s.accessible_name)
-                         else float("nan") for s in element_list]
+        parsed_floats = [
+            float(re.sub(r'[^\d,]', '', s.accessible_name).replace(',', '.'))
+            if s.accessible_name and re.sub(r'[^\d.]', '', s.accessible_name)
+            else float("nan") for s in element_list
+        ]
         return parsed_floats
 
     @staticmethod
     def _is_date_pattern(element: WebElement):
-        # Match[str] is truthy, None is falsy and can be used in filter()
+        """Match[str] is truthy, None is falsy and can be used in filter()."""
         date_pattern = r"\d{4}-\d{2}-\d{2}"
         return re.match(date_pattern, element.accessible_name)
 
@@ -188,3 +178,25 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def _is_not_nan(val: float) -> bool:
+    # two nan's are not equal to each other
+    return not (val != val)
+
+
+def _zip_strict(*args):
+    """Only uses zip() on args if they have the same length, errors otherwise."""
+    arg_lens = [len(arg) for arg in args]
+    if len(set(arg_lens)) != 1:
+        raise ValueError("All input iterables must have the same length")
+    return zip(*args)
+
+
+def _get_fixed_url_pattern(
+    ticker: str,
+    name: str,
+    report_name: str
+) -> str:
+    tail = ticker.upper() + "/" + name.lower() + "/" + report_name
+    return "https://www.macrotrends.net/stocks/charts/" + tail
