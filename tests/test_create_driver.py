@@ -16,12 +16,11 @@ class TestCreateDriver(unittest.TestCase):
     def setUp(self) -> None:
         """Set up parameters."""
         self.logger = Logger("unittest_create_driver", "info")
-        self.url = 'https://www.macrotrends.net/stocks/stock-screener'
 
     def test_create_driver(self):
         """Check if the created driver object is WebDriver object."""
         # Check if self.driver is a WebDriver object
-        driver = create_driver(self.url, logger_str="none")
+        driver = create_driver(logger_str="none")
         self.assertIsInstance(driver, selenium.webdriver.chrome.webdriver.WebDriver)
         driver.close()
         driver.quit()

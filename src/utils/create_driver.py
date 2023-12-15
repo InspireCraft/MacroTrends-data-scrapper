@@ -5,7 +5,7 @@ import json
 import os
 
 
-def create_driver(url, logger_str="info") -> "webdriver.chrome":
+def create_driver(logger_str="info") -> "webdriver.chrome":
     """Create driver object.
 
     Driver is an WebDriver object that interacts with the website. Clicking,
@@ -48,7 +48,6 @@ def create_driver(url, logger_str="info") -> "webdriver.chrome":
     driver = webdriver.Chrome(options=options)
 
     # Finalize webdriver creation by calling the url
-    driver.get(url)
     logger.info("WebDriver is created!!!")
     return driver
 

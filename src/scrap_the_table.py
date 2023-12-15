@@ -86,7 +86,12 @@ class TableScrapper:
             dictionary of the companies associated with their properties
         """
         # Create driver to scrap/interact with the website
-        driver = create_driver(self.url, self.str_logger)
+        driver = create_driver(self.str_logger)
+
+        # Get the url of the website to be scrapped
+        driver.get(self.url)
+
+        # Let scrapping begin
         self.logger.info("SCRAPPING STARTED...")
 
         # Get number of rows per page and total
