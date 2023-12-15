@@ -52,7 +52,7 @@ class TableScrapper:
         search_dict = json.load(f_search)
         f_search.close()
 
-        self.search_params = [elem for elem in search_dict["search_parameters"]]
+        self.search_params = [element for element in search_dict["search_parameters"]]
         self.logger.info(f"Search Params = {self.search_params}...")
 
     def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
