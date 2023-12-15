@@ -55,10 +55,10 @@ def create_driver(url, logger_str="info") -> "webdriver.chrome":
 
 def main():
     """Run create driver function."""
-    return create_driver(url="https://www.macrotrends.net/stocks/stock-screener")
+    driver = create_driver(url="https://www.macrotrends.net/stocks/stock-screener")
+    driver.close()
+    driver.quit()
 
 
 if __name__ == "__main__":
-    driver = main()
-    driver.close()
-    driver.quit()
+    main()
