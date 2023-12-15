@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 from src.utils.Logger import Logger
 import json
-from src.map_of_headers import map_of_headers
+from src.map_of_headers import MAP_OF_HEADERS
 from src.utils.create_driver import create_driver
 import os
 
@@ -119,7 +119,7 @@ class TableScrapper:
                 # Fill the dictionary by the keys of the headers
                 for name in self.search_params:
                     # Click the corresponding header
-                    tab_name = list(map_of_headers[name].keys())[0]
+                    tab_name = list(MAP_OF_HEADERS[name].keys())[0]
                     WebDriverWait(driver, 10).until(
                         ec.element_to_be_clickable((By.XPATH,
                                                     f"//*[@id='columns_{tab_name}']/a"))) \
@@ -127,7 +127,7 @@ class TableScrapper:
 
                     # Retrive the required information after clicking on the corresponding header
                     for row_index in range(final_num - init_num + 1):
-                        column_index = list(map_of_headers[name].values())[0] - 1
+                        column_index = list(MAP_OF_HEADERS[name].values())[0] - 1
                         com_tck = list(company_attr_dict.keys())[
                             int(init_num + row_index - 1)]
                         attr = driver.find_elements(

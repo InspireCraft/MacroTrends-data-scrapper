@@ -1,4 +1,4 @@
-map_of_headers = {
+MAP_OF_HEADERS = {
     "Industry": {"overview": 1},
     "Market Cap": {"overview": 2},
     "Closing Price": {"overview": 3},
