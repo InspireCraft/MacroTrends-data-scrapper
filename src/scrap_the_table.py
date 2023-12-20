@@ -106,23 +106,22 @@ class TableScrapper:
             while final_num != max_num:
                 (init_num, final_num, _) = self._get_num_of_rows(driver)
 
-                # Construct dict by scrapping company tickers
+                # Construct the dict by scrapping company tickers and add names afterwards
                 for row_index in range(final_num - init_num + 1):
+                    # Get tickers
                     company_ticker = (
                         driver.find_elements(
                             By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
                             0].text)
                     company_attr_dict[company_ticker] = {}
 
-                company_ticker_list = list(company_attr_dict.keys())
-
-                # Add company names after tickers
-                for row_index in range(final_num - init_num + 1):
-                    com_tck = company_ticker_list[int(init_num + row_index - 1)]
+                    # Get names
                     attr = driver.find_elements(
-                        By.XPATH, f"//*[@id='row{row_index}jqxGrid']/div[1]/div/div/a")[
-                        0].text
-                    company_attr_dict[com_tck]['name'] = attr
+                                By.XPATH, f"//*[@id='row{row_index}jqxGrid']/div[1]/div/div/a")[
+                                0].text
+                    company_attr_dict[company_ticker]['name'] = attr
+
+                company_ticker_list = list(company_attr_dict.keys())
 
                 # Fill the dictionary by the keys of the headers
                 for name in self.search_params:
