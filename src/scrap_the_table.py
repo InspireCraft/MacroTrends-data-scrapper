@@ -101,6 +101,7 @@ class TableScrapper:
         company_attr_dict = {}
 
         # Track the progress of the scrapping process with a progress bar
+        PBAR_UPDATE_CONSTANT = 20
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
                 (init_num, final_num, _) = self._get_num_of_rows(driver)
@@ -143,7 +144,7 @@ class TableScrapper:
                         company_attr_dict[com_tck][name] = attr
 
                 # Update the progress bar
-                pbar.update(20)
+                pbar.update(PBAR_UPDATE_CONSTANT)
 
                 # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
