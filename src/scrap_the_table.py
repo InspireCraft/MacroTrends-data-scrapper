@@ -114,9 +114,11 @@ class TableScrapper:
                             0].text)
                     company_attr_dict[company_ticker] = {}
 
+                company_ticker_list = list(company_attr_dict.keys())
+
                 # Add company names after tickers
                 for row_index in range(final_num - init_num + 1):
-                    com_tck = list(company_attr_dict.keys())[int(init_num + row_index - 1)]
+                    com_tck = company_ticker_list[int(init_num + row_index - 1)]
                     attr = driver.find_elements(
                         By.XPATH, f"//*[@id='row{row_index}jqxGrid']/div[1]/div/div/a")[
                         0].text
@@ -134,7 +136,7 @@ class TableScrapper:
                     # Retrive the required information after clicking on the corresponding header
                     column_index = list(MAP_OF_HEADERS[name].values())[0] - 1
                     for row_index in range(final_num - init_num + 1):
-                        com_tck = list(company_attr_dict.keys())[
+                        com_tck = company_ticker_list[
                             int(init_num + row_index - 1)]
                         attr = driver.find_elements(
                             By.XPATH,
@@ -159,7 +161,7 @@ class TableScrapper:
         driver.quit()
         return company_attr_dict
 
-
+import csv
 def main():
     """Run the TableScrapper.
 
@@ -170,8 +172,10 @@ def main():
     """
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
-    return scrapped_data
-
+    with open('scrap_table_trial.csv', 'w') as csv_file:
+        writer = csv.writer(csv_file)
+        for key, value in scrapped_data.items():
+            writer.writerow([key, value])
 
 if __name__ == "__main__":
     main()
