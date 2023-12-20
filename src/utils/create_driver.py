@@ -32,12 +32,11 @@ def create_driver(logger_str="info") -> "webdriver.chrome":
     f_search.close()
 
     # Get desired webdriver options
-    opts = [opt for opt in options_dict["options"]]
-    logger.info(f"Webdriver Options = {opts}...")
+    logger.info(f"Webdriver Options = {options_dict['options']}...")
 
     # Add driver options to the driver
     options = Options()
-    for opt in opts:
+    for opt in options_dict["options"]:
         options.add_argument(opt)
 
     # Below option enables web driver to be able to scrap when in headless mode
@@ -54,7 +53,7 @@ def create_driver(logger_str="info") -> "webdriver.chrome":
 
 def main():
     """Run create driver function."""
-    driver = create_driver(url="https://www.macrotrends.net/stocks/stock-screener")
+    driver = create_driver()
     driver.close()
     driver.quit()
 
