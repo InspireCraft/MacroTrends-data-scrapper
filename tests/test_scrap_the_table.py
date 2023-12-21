@@ -28,7 +28,8 @@ class TestTableScrapper(unittest.TestCase):
         """Set up reused variables/objects."""
         self.scrapper = TableScrapper(str_logger="none")
         url = 'https://www.macrotrends.net/stocks/stock-screener'
-        self.driver = create_driver(url, "none")
+        self.driver = create_driver("none")
+        self.driver.get(url)
 
     def test_get_num_of_rows(self):
         """Check if the function returns tuple of ints.
