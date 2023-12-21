@@ -160,7 +160,10 @@ class TableScrapper:
         driver.quit()
         return company_attr_dict
 
+
 import csv
+
+
 def main():
     """Run the TableScrapper.
 
@@ -175,6 +178,7 @@ def main():
         writer = csv.writer(csv_file)
         for key, value in scrapped_data.items():
             writer.writerow([key, value])
+
 
 if __name__ == "__main__":
     main()
