@@ -100,8 +100,6 @@ class TableScrapper:
         # Initialize attribute dictionary
         company_attr_dict = {}
 
-        # Track the progress of the scrapping process with a progress bar
-        PBAR_UPDATE_CONSTANT = 20
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
                 (init_num, final_num, _) = self._get_num_of_rows(driver)
@@ -117,8 +115,8 @@ class TableScrapper:
 
                     # Get names
                     attr = driver.find_elements(
-                                By.XPATH, f"//*[@id='row{row_index}jqxGrid']/div[1]/div/div/a")[
-                                0].text
+                        By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
+                                  f"div[1]/div/div/a")[0].text
                     company_attr_dict[company_ticker]['name'] = attr
 
                 company_ticker_list = list(company_attr_dict.keys())
@@ -145,7 +143,7 @@ class TableScrapper:
                         company_attr_dict[com_tck][name] = attr
 
                 # Update the progress bar
-                pbar.update(PBAR_UPDATE_CONSTANT)
+                pbar.update(int(final_num - init_num + 1))
 
                 # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
@@ -161,9 +159,6 @@ class TableScrapper:
         return company_attr_dict
 
 
-import csv
-
-
 def main():
     """Run the TableScrapper.
 
@@ -172,6 +167,7 @@ def main():
     scrapped_data : dict
         Dictionary of the table in the given url
     """
+    import csv
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
     with open('scrap_table_trial.csv', 'w') as csv_file:
