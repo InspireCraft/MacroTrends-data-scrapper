@@ -47,8 +47,8 @@ class TableScrapper:
         self.logger = Logger(self.__class__.__name__, str_logger)
 
         # Read JSON file for parameters required to be searched
-        os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__))))
-        f_search = open("searchParameters.json")
+        path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
+        f_search = open(f"{path_for_search_parameters}\\searchParameters.json")
         search_dict = json.load(f_search)
         f_search.close()
 
