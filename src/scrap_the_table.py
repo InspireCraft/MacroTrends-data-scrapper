@@ -10,14 +10,6 @@ from src.utils.create_driver import create_driver
 import os
 from src.utils.manage_driver import ManageDriver
 
-#TODO: STATICMETHOD GETNUMBERS
-# DEF FUNC (
-# FORMAT
-# )
-# EFFICIENT -> READABLE
-# row'a gel colunmlari al full !!!!
-# company name
-
 class TableScrapper:
     """
     Class to be used to scrap the table data in macro-trends.
@@ -64,7 +56,7 @@ class TableScrapper:
         self.search_params = [element for element in search_dict["search_parameters"]]
         self.logger.info(f"Search Params = {self.search_params}...")
 
-
+    @staticmethod
     def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
         """Check current row number, max row number in current page, total row number.
 
@@ -110,7 +102,9 @@ class TableScrapper:
                     self.driver_manager.driver
                 )
                 num_of_companies_on_page = final_num - init_num + 1
-                # Construct the dict by scrapping company tickers and add names afterwards
+
+                ticker_list = []
+                # Pre-set the company tickers
                 for row_index in range(num_of_companies_on_page):
                     # Get company tickers
                     company_ticker = (
@@ -125,9 +119,10 @@ class TableScrapper:
                                   f"div[1]/div/div/a")[0].text
                     company_attr_dict[company_ticker]['name'] = company_name
 
-                company_ticker_list = list(company_attr_dict.keys())
+                    # Store by-for-loop company tickers
+                    ticker_list.append(company_ticker)
 
-                # Fill in the dictionary according to the parameters to be searched
+                # For each parameters to be scrapped fill the dictionary
                 for param in self.search_params:
                     # Click the corresponding header
                     tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
@@ -138,16 +133,15 @@ class TableScrapper:
                                                     f"//*[@id='columns_{tab_name}']/a"))) \
                         .click()
 
-                    # Retrive the required information after clicking on the corresponding header
-                    for row_index in range(num_of_companies_on_page):
-                        com_tck = company_ticker_list[
-                            int(init_num + row_index - 1)]
-                        attr = self.driver_manager.driver.find_elements(
+                    # Fill dictionary ticker by ticker
+                    for ticker in ticker_list:
+                        # Get parameter values
+                        parameter_value = self.driver_manager.driver.find_elements(
                             By.XPATH,
                             f"//*[@id='row{row_index}jqxGrid']/"
                             f"div[{int(3 + column_index)}]/div")[
                             0].text
-                        company_attr_dict[com_tck][param] = attr
+                        company_attr_dict[ticker][param] = parameter_value
 
                 # Update the progress bar
                 pbar.update(int(num_of_companies_on_page))
