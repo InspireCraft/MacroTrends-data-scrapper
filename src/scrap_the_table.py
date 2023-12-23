@@ -11,7 +11,6 @@ import os
 from src.utils.manage_driver import ManageDriver
 
 #TODO: STATICMETHOD GETNUMBERS
-# SETUP DRIVER
 # init_num - final_num + 1 -> variable
 # DEF FUNC (
 # FORMAT
@@ -68,6 +67,7 @@ class TableScrapper:
         self.search_params = [element for element in search_dict["search_parameters"]]
         self.logger.info(f"Search Params = {self.search_params}...")
 
+
     def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
         """Check current row number, max row number in current page, total row number.
 
@@ -112,9 +112,9 @@ class TableScrapper:
                 (init_num, final_num, _) = self._get_num_of_rows(
                     self.driver_manager.driver
                 )
-
+                num_of_elements_on_page = final_num - init_num + 1
                 # Construct the dict by scrapping company tickers and add names afterwards
-                for row_index in range(final_num - init_num + 1):
+                for row_index in range(num_of_elements_on_page):
                     # Get tickers
                     company_ticker = (
                         self.driver_manager.driver.find_elements(
@@ -141,7 +141,7 @@ class TableScrapper:
 
                     # Retrive the required information after clicking on the corresponding header
                     column_index = list(MAP_OF_HEADERS[name].values())[0] - 1
-                    for row_index in range(final_num - init_num + 1):
+                    for row_index in range(num_of_elements_on_page):
                         com_tck = company_ticker_list[
                             int(init_num + row_index - 1)]
                         attr = self.driver_manager.driver.find_elements(
@@ -152,7 +152,7 @@ class TableScrapper:
                         company_attr_dict[com_tck][name] = attr
 
                 # Update the progress bar
-                pbar.update(int(final_num - init_num + 1))
+                pbar.update(int(num_of_elements_on_page))
 
                 # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(self.driver_manager.driver, 2).until(ec.element_to_be_clickable(
