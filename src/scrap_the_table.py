@@ -15,7 +15,6 @@ from src.utils.manage_driver import ManageDriver
 # FORMAT
 # )
 # EFFICIENT -> READABLE
-# .items() --> get dict elements as tuple
 # row'a gel colunmlari al full !!!!
 # company name
 
