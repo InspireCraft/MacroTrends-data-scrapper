@@ -8,7 +8,19 @@ import json
 from src.map_of_headers import MAP_OF_HEADERS
 from src.utils.create_driver import create_driver
 import os
+from src.utils.manage_driver import ManageDriver
 
+#TODO: STATICMETHOD GETNUMBERS
+# SETUP DRIVER
+# init_num - final_num + 1 -> variable
+# DEF FUNC (
+# FORMAT
+# )
+# for name in search_parameters -> fpr param in ...
+# EFFICIENT -> READABLE
+# .items() --> get dict elements as tuple
+# row'a gel colunmlari al full !!!!
+# company name
 
 class TableScrapper:
     """
@@ -42,7 +54,8 @@ class TableScrapper:
         str_logger : str
               the functionality string of the logger object
         """
-        self.url = url
+        self.driver_manager = ManageDriver()  # Initialize driver manager object
+        self.driver_manager.set_up_driver(url)  # Set up the driver by using the url
         self.str_logger = str_logger
         self.logger = Logger(self.__class__.__name__, str_logger)
 
@@ -85,36 +98,32 @@ class TableScrapper:
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        # Create driver to scrap/interact with the website
-        driver = create_driver(self.str_logger)
-
-        # Get the url of the website to be scrapped
-        driver.get(self.url)
-
         # Let scrapping begin
         self.logger.info("SCRAPPING STARTED...")
 
         # Get number of rows per page and total
-        (init_num, final_num, max_num) = self._get_num_of_rows(driver)
+        (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
 
         # Initialize attribute dictionary
         company_attr_dict = {}
 
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
-                (init_num, final_num, _) = self._get_num_of_rows(driver)
+                (init_num, final_num, _) = self._get_num_of_rows(
+                    self.driver_manager.driver
+                )
 
                 # Construct the dict by scrapping company tickers and add names afterwards
                 for row_index in range(final_num - init_num + 1):
                     # Get tickers
                     company_ticker = (
-                        driver.find_elements(
+                        self.driver_manager.driver.find_elements(
                             By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
                             0].text)
                     company_attr_dict[company_ticker] = {}
 
                     # Get names
-                    attr = driver.find_elements(
+                    attr = self.driver_manager.driver.find_elements(
                         By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
                                   f"div[1]/div/div/a")[0].text
                     company_attr_dict[company_ticker]['name'] = attr
@@ -125,7 +134,7 @@ class TableScrapper:
                 for name in self.search_params:
                     # Click the corresponding header
                     tab_name = list(MAP_OF_HEADERS[name].keys())[0]
-                    WebDriverWait(driver, 10).until(
+                    WebDriverWait(self.driver_manager.driver, 10).until(
                         ec.element_to_be_clickable((By.XPATH,
                                                     f"//*[@id='columns_{tab_name}']/a"))) \
                         .click()
@@ -135,7 +144,7 @@ class TableScrapper:
                     for row_index in range(final_num - init_num + 1):
                         com_tck = company_ticker_list[
                             int(init_num + row_index - 1)]
-                        attr = driver.find_elements(
+                        attr = self.driver_manager.driver.find_elements(
                             By.XPATH,
                             f"//*[@id='row{row_index}jqxGrid']/"
                             f"div[{int(3 + column_index)}]/div")[
@@ -146,7 +155,7 @@ class TableScrapper:
                 pbar.update(int(final_num - init_num + 1))
 
                 # Click on the clickable arrow on the table to progress in the pages
-                WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
+                WebDriverWait(self.driver_manager.driver, 2).until(ec.element_to_be_clickable(
                     (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
                                "div[4]/div"))).click()
 
@@ -154,8 +163,7 @@ class TableScrapper:
         self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
 
         # Shut down the driver
-        driver.close()
-        driver.quit()
+        self.driver_manager.kill_driver()
         return company_attr_dict
 
 
