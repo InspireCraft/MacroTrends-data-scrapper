@@ -24,16 +24,21 @@ class ManageDriver:
         self.driver.close()
         self.driver.quit()
 
+
 def main():
     """Run set up driver function."""
     url = "https://www.macrotrends.net/stocks/stock-screener"
     drv_ctrl = ManageDriver()
-    # print(drv_ctrl.driver.service.is_connectable())
+    print(drv_ctrl.driver.service.is_connectable())
+    # print(drv_ctrl.driver.session_id)
     drv_ctrl.set_up_driver(url)
-    # print(driver.service.is_connectable())
-    # print(drv_ctrl.driver.service.is_connectable())
+    print(drv_ctrl.driver.current_url)
+    print(drv_ctrl.driver.service.is_connectable())
+    # print(drv_ctrl.driver.session_id)
     drv_ctrl.kill_driver()
-    # print(drv_ctrl.driver.service.is_connectable())
+    print(drv_ctrl.driver.service.is_connectable())
+    # print(drv_ctrl.driver.session_id)
+
 
 if __name__ == "__main__":
     main()
