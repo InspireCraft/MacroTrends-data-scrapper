@@ -11,11 +11,9 @@ import os
 from src.utils.manage_driver import ManageDriver
 
 #TODO: STATICMETHOD GETNUMBERS
-# init_num - final_num + 1 -> variable
 # DEF FUNC (
 # FORMAT
 # )
-# for name in search_parameters -> fpr param in ...
 # EFFICIENT -> READABLE
 # .items() --> get dict elements as tuple
 # row'a gel colunmlari al full !!!!
@@ -112,36 +110,37 @@ class TableScrapper:
                 (init_num, final_num, _) = self._get_num_of_rows(
                     self.driver_manager.driver
                 )
-                num_of_elements_on_page = final_num - init_num + 1
+                num_of_companies_on_page = final_num - init_num + 1
                 # Construct the dict by scrapping company tickers and add names afterwards
-                for row_index in range(num_of_elements_on_page):
-                    # Get tickers
+                for row_index in range(num_of_companies_on_page):
+                    # Get company tickers
                     company_ticker = (
                         self.driver_manager.driver.find_elements(
                             By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
                             0].text)
                     company_attr_dict[company_ticker] = {}
 
-                    # Get names
-                    attr = self.driver_manager.driver.find_elements(
+                    # Get company names
+                    company_name = self.driver_manager.driver.find_elements(
                         By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
                                   f"div[1]/div/div/a")[0].text
-                    company_attr_dict[company_ticker]['name'] = attr
+                    company_attr_dict[company_ticker]['name'] = company_name
 
                 company_ticker_list = list(company_attr_dict.keys())
 
-                # Fill the dictionary by the keys of the headers
-                for name in self.search_params:
+                # Fill in the dictionary according to the parameters to be searched
+                for param in self.search_params:
                     # Click the corresponding header
-                    tab_name = list(MAP_OF_HEADERS[name].keys())[0]
+                    tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
+                    column_index -= 1
+
                     WebDriverWait(self.driver_manager.driver, 10).until(
                         ec.element_to_be_clickable((By.XPATH,
                                                     f"//*[@id='columns_{tab_name}']/a"))) \
                         .click()
 
                     # Retrive the required information after clicking on the corresponding header
-                    column_index = list(MAP_OF_HEADERS[name].values())[0] - 1
-                    for row_index in range(num_of_elements_on_page):
+                    for row_index in range(num_of_companies_on_page):
                         com_tck = company_ticker_list[
                             int(init_num + row_index - 1)]
                         attr = self.driver_manager.driver.find_elements(
@@ -149,10 +148,10 @@ class TableScrapper:
                             f"//*[@id='row{row_index}jqxGrid']/"
                             f"div[{int(3 + column_index)}]/div")[
                             0].text
-                        company_attr_dict[com_tck][name] = attr
+                        company_attr_dict[com_tck][param] = attr
 
                 # Update the progress bar
-                pbar.update(int(num_of_elements_on_page))
+                pbar.update(int(num_of_companies_on_page))
 
                 # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(self.driver_manager.driver, 2).until(ec.element_to_be_clickable(
