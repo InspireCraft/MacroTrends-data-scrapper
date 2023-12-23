@@ -16,7 +16,8 @@ def create_driver(logger_str="info") -> "webdriver.chrome":
     url : string
         url of the website which is going to be scrapped
 
-    logger : Logger object
+    logger_str : string
+        logger objects level indicator
 
     Returns
     -------
@@ -27,9 +28,9 @@ def create_driver(logger_str="info") -> "webdriver.chrome":
     logger.info("WebDriver is being created...")
 
     path = os.path.dirname(os.path.abspath(__file__))
-    f_search = open(f"{path}\\webdriverOptions.json")
-    options_dict = json.load(f_search)
-    f_search.close()
+
+    with open(f"{path}\\webdriverOptions.json") as webdriver_options:
+        options_dict = json.load(webdriver_options)
 
     # Get desired webdriver options
     logger.info(f"Webdriver Options = {options_dict['options']}...")
