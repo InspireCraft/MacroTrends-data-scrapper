@@ -2,6 +2,17 @@ from src.utils.create_driver import create_driver
 
 
 class ManageDriver:
+    """Class to set up and kill driver.
+
+    Methods
+    -------
+    set_up_driver():
+        Set up driver object for the url given
+
+    kill_driver():
+        Kill driver object
+    """
+
     def __init__(self):
         self.driver = create_driver(logger_str="none")
 
@@ -13,14 +24,11 @@ class ManageDriver:
         url : string
             url of the website to be scrapped
 
-        Returns
-        -------
-
         """
         self.driver.get(url)
 
     def kill_driver(self):
-        """Kills driver object."""
+        """Kill driver object."""
         self.driver.close()
         self.driver.quit()
 

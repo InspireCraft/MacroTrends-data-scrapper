@@ -1,6 +1,4 @@
 # Import libraries
-import sys
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -150,9 +148,10 @@ class TableScrapper:
                     # Check if clicking onto a tab name is required
                     if previous_tab_name != tab_name:
                         WebDriverWait(self.driver_manager.driver, 10).until(
-                            ec.element_to_be_clickable((By.XPATH,
-                                                        f"//*[@id='columns_{tab_name}']/a"))) \
-                            .click()
+                            ec.element_to_be_clickable(
+                                (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
+                            )
+                        ).click()
 
                     previous_tab_name = tab_name
 
@@ -170,9 +169,13 @@ class TableScrapper:
                 pbar.update(int(num_of_companies_on_page))
 
                 # Click on the clickable arrow on the table to progress in the pages
-                WebDriverWait(self.driver_manager.driver, 2).until(ec.element_to_be_clickable(
-                    (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
-                               "div[4]/div"))).click()
+                WebDriverWait(self.driver_manager.driver, 2).until(
+                    ec.element_to_be_clickable(
+                        (By.XPATH,
+                         "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/div[4]/div"
+                         )
+                    )
+                ).click()
 
         self.logger.info("SCRAPPING IS DONE!!!")
         self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
