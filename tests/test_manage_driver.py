@@ -19,18 +19,18 @@ class TestManageDriver(unittest.TestCase):
 
     def setUp(self):
         """Set up reused variables/objects."""
-        self.driver_controller = ManageDriver()
+        self.driver_manager = ManageDriver()
 
     def test_set_up_driver(self):
         """Check if the driver gets the url."""
         url = "https://www.macrotrends.net/stocks/stock-screener"
-        self.driver_controller.set_up_driver(url)
-        self.assertTrue(self.driver_controller.driver.current_url == url)
+        self.driver_manager.set_up_driver(url)
+        self.assertTrue(self.driver_manager.driver.current_url == url)
 
     def test_kill_driver(self):
         """Check if the driver is shut down."""
-        self.driver_controller.kill_driver()
-        self.assertFalse(self.driver_controller.driver.service.is_connectable())
+        self.driver_manager.kill_driver()
+        self.assertFalse(self.driver_manager.driver.service.is_connectable())
 
 
 if __name__ == "__main__":
