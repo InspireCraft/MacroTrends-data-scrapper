@@ -1,4 +1,6 @@
 # Import libraries
+import sys
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,9 +8,9 @@ from tqdm import tqdm
 from src.utils.Logger import Logger
 import json
 from src.map_of_headers import MAP_OF_HEADERS
-from src.utils.create_driver import create_driver
 import os
 from src.utils.manage_driver import ManageDriver
+
 
 class TableScrapper:
     """
@@ -49,15 +51,31 @@ class TableScrapper:
 
         # Read JSON file for parameters required to be searched
         path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
-        f_search = open(f"{path_for_search_parameters}\\searchParameters.json")
-        search_dict = json.load(f_search)
-        f_search.close()
+        with open(f"{path_for_search_parameters}\\searchParameters.json") as parameters_to_search:
+            search_dict = json.load(parameters_to_search)
 
-        self.search_params = [element for element in search_dict["search_parameters"]]
+        parameters = [element for element in search_dict["search_parameters"]]
+
+        # Get required tab_names to be clicked to search for parameters
+        tab_name_list = []
+        for param in parameters:
+            tab_name_list.append(
+                list(
+                    MAP_OF_HEADERS[param].items()
+                )[0][0]  # Get the key values which is header name
+            )
+
+        # Re-order parameters for efficient search (this allows less click interaction)
+        # Below line of code re-order parameter list such a way that the parameters
+        # sharing the same tab_name grouped together
+        self.search_params = [
+            p for _, p in sorted(zip(tab_name_list, parameters))
+        ]
+
         self.logger.info(f"Search Params = {self.search_params}...")
 
     @staticmethod
-    def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
+    def _get_num_of_rows(driver) -> "tuple[int,int,int]":
         """Check current row number, max row number in current page, total row number.
 
         Parameters
@@ -123,18 +141,23 @@ class TableScrapper:
                     ticker_list.append(company_ticker)
 
                 # For each parameters to be scrapped fill the dictionary
+                previous_tab_name = None
                 for param in self.search_params:
                     # Click the corresponding header
                     tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
                     column_index -= 1
 
-                    WebDriverWait(self.driver_manager.driver, 10).until(
-                        ec.element_to_be_clickable((By.XPATH,
-                                                    f"//*[@id='columns_{tab_name}']/a"))) \
-                        .click()
+                    # Check if clicking onto a tab name is required
+                    if previous_tab_name != tab_name:
+                        WebDriverWait(self.driver_manager.driver, 10).until(
+                            ec.element_to_be_clickable((By.XPATH,
+                                                        f"//*[@id='columns_{tab_name}']/a"))) \
+                            .click()
+
+                    previous_tab_name = tab_name
 
                     # Fill dictionary ticker by ticker
-                    for ticker in ticker_list:
+                    for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
                         # Get parameter values
                         parameter_value = self.driver_manager.driver.find_elements(
                             By.XPATH,
