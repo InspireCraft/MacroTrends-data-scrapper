@@ -1,7 +1,5 @@
 import unittest
 from src.scrap_the_table import TableScrapper
-from src.utils.create_driver import create_driver
-from src.utils.manage_driver import DriverManager
 
 
 class TestTableScrapper(unittest.TestCase):
