@@ -7,7 +7,7 @@ from src.utils.Logger import Logger
 import json
 from src.map_of_headers import MAP_OF_HEADERS
 import os
-from src.utils.manage_driver import ManageDriver
+from src.utils.manage_driver import DriverManager
 
 
 class TableScrapper:
@@ -42,7 +42,7 @@ class TableScrapper:
         str_logger : str
               the functionality string of the logger object
         """
-        self.driver_manager = ManageDriver()  # Initialize driver manager object
+        self.driver_manager = DriverManager()  # Initialize driver manager object
         self.driver_manager.set_up_driver(url)  # Set up the driver by using the url
         self.str_logger = str_logger
         self.logger = Logger(self.__class__.__name__, str_logger)

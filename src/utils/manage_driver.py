@@ -1,7 +1,7 @@
 from src.utils.create_driver import create_driver
 
 
-class ManageDriver:
+class DriverManager:
     """Class to set up and kill driver.
 
     Methods
@@ -36,16 +36,9 @@ class ManageDriver:
 def main():
     """Run set up driver function."""
     url = "https://www.macrotrends.net/stocks/stock-screener"
-    drv_ctrl = ManageDriver()
-    print(drv_ctrl.driver.service.is_connectable())
-    # print(drv_ctrl.driver.session_id)
+    drv_ctrl = DriverManager()
     drv_ctrl.set_up_driver(url)
-    print(drv_ctrl.driver.current_url)
-    print(drv_ctrl.driver.service.is_connectable())
-    # print(drv_ctrl.driver.session_id)
     drv_ctrl.kill_driver()
-    print(drv_ctrl.driver.service.is_connectable())
-    # print(drv_ctrl.driver.session_id)
 
 
 if __name__ == "__main__":
