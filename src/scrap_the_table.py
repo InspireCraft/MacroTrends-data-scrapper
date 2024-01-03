@@ -66,6 +66,7 @@ class TableScrapper:
         # Re-order parameters for efficient search (this allows less click interaction)
         # Below line of code re-order parameter list such a way that the parameters
         # sharing the same tab_name grouped together
+        # sorted(zip(param1,param2)) sorts according to param1
         self.search_params = [
             p for _, p in sorted(zip(tab_name_list, parameters))
         ]
