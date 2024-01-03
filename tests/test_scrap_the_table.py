@@ -1,5 +1,6 @@
 import unittest
 from src.scrap_the_table import TableScrapper
+from src.map_of_headers import MAP_OF_HEADERS
 
 
 class TestTableScrapper(unittest.TestCase):
@@ -28,6 +29,32 @@ class TestTableScrapper(unittest.TestCase):
         url = 'https://www.macrotrends.net/stocks/stock-screener'
         self.scrapper = TableScrapper(url=url, str_logger="none")
         self.driver = self.scrapper.driver_manager.driver
+
+    def test_sort_search_parameters(self):
+        """Check if sorting works."""
+        search_dict = {
+            "search_parameters":[
+                "Market Cap",
+                "3 Year CAGR %",
+                "5 Year CAGR %",
+                "Price/Earnings Ratio",
+                "PEG Ratio",
+                "Closing Price",
+                "1 Year % Change",
+                "30 Year CAGR %"
+            ]
+        }
+        search_params = self.scrapper._sort_search_parameters(search_dict)
+
+        # Get headers after sorting/grouping
+        header_list = [list(MAP_OF_HEADERS[name].keys())[0] for name in search_params]
+
+        # Re-sort the headers to check if any unexpected situation exists
+        list_tobe_sort = header_list.copy()
+        list_tobe_sort = sorted(list_tobe_sort)
+
+        # Assert if the two list equal
+        self.assertEqual(header_list, list_tobe_sort)
 
     def test_get_num_of_rows(self):
         """Check if the function returns tuple of ints.
