@@ -1,4 +1,6 @@
 # Import libraries
+import sys
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -52,26 +54,25 @@ class TableScrapper:
         with open(f"{path_for_search_parameters}\\searchParameters.json") as parameters_to_search:
             search_dict = json.load(parameters_to_search)
 
+        # Sort search parameters for efficient interaction with the website
+        self.search_params = self._sort_search_parameters(search_dict)
+
+        # Print to CL what is searched
+        self.logger.info(f"Search Params = {self.search_params}...")
+
+    @staticmethod
+    def _sort_search_parameters(search_dict):
         parameters = [element for element in search_dict["search_parameters"]]
 
         # Get required tab_names to be clicked to search for parameters
-        tab_name_list = []
-        for param in parameters:
-            tab_name_list.append(
-                list(
-                    MAP_OF_HEADERS[param].items()
-                )[0][0]  # Get the key values which is header name
-            )
-
+        tab_name_list = [
+            list(MAP_OF_HEADERS[element].keys())[0] for element in search_dict["search_parameters"]
+        ]
         # Re-order parameters for efficient search (this allows less click interaction)
         # Below line of code re-order parameter list such a way that the parameters
         # sharing the same tab_name grouped together
         # sorted(zip(param1,param2)) sorts according to param1
-        self.search_params = [
-            p for _, p in sorted(zip(tab_name_list, parameters))
-        ]
-
-        self.logger.info(f"Search Params = {self.search_params}...")
+        return [p for _, p in sorted(zip(tab_name_list, parameters))]
 
     @staticmethod
     def _get_num_of_rows(driver) -> "tuple[int,int,int]":
