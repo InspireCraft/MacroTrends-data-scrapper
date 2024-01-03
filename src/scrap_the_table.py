@@ -92,6 +92,10 @@ class TableScrapper:
         number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
         return current_initial_number, current_final_number, number_of_rows_in_the_list
 
+    def __del__(self):
+        # Shut down the driver
+        self.driver_manager.kill_driver()
+
     def scrap_the_table(self):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
@@ -181,8 +185,6 @@ class TableScrapper:
         self.logger.info("SCRAPPING IS DONE!!!")
         self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
 
-        # Shut down the driver
-        self.driver_manager.kill_driver()
         return company_attr_dict
 
 
@@ -201,6 +203,7 @@ def main():
         writer = csv.writer(csv_file)
         for key, value in scrapped_data.items():
             writer.writerow([key, value])
+    scrapper.__del__()
 
 
 if __name__ == "__main__":
