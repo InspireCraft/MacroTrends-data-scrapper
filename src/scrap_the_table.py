@@ -1,14 +1,14 @@
 # Import libraries
-import sys
+import os
+import json
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
-from src.utils.Logger import Logger
-import json
+
 from src.map_of_headers import MAP_OF_HEADERS
-import os
+from src.utils.Logger import Logger
 from src.utils.manage_driver import DriverManager
 
 
@@ -33,20 +33,20 @@ class TableScrapper:
 
     """
 
-    def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener', str_logger="info"):
+    def __init__(self, str_logger="info"):
         """
         Construct instant variables.
 
         Parameters
         ----------
-        url : str
-              the url of the website that is going to be scrapped
         str_logger : str
               the functionality string of the logger object
         """
+        # URL of the website this table scrapper works
+        url = "https://www.macrotrends.net/stocks/stock-screener"
+
         self.driver_manager = DriverManager()  # Initialize driver manager object
-        self.driver_manager.set_up_driver(url)  # Set up the driver by using the url
-        self.str_logger = str_logger
+        self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
 
         # Read JSON file for parameters required to be searched
@@ -62,6 +62,17 @@ class TableScrapper:
 
     @staticmethod
     def _sort_search_parameters(search_dict):
+        """Sort tab_names for min amount of click interaction.
+
+        Parameters
+        ----------
+        search_dict : dict
+            dictionary of parameters
+
+        Returns
+        -------
+        Sorted list of parameters to be scrapped
+        """
         parameters = [element for element in search_dict["search_parameters"]]
 
         # Get required tab_names to be clicked to search for parameters
@@ -94,7 +105,7 @@ class TableScrapper:
         return current_initial_number, current_final_number, number_of_rows_in_the_list
 
     def __del__(self):
-        # Shut down the driver
+        """Shut down the driver."""
         self.driver_manager.kill_driver()
 
     def scrap_the_table(self):
@@ -144,7 +155,7 @@ class TableScrapper:
                     # Store by-for-loop company tickers
                     ticker_list.append(company_ticker)
 
-                # For each parameters to be scrapped fill the dictionary
+                # For each parameter to be scrapped, fill the dictionary
                 previous_tab_name = None
                 for param in self.search_params:
                     # Click the corresponding header
@@ -159,7 +170,7 @@ class TableScrapper:
                             )
                         ).click()
 
-                    previous_tab_name = tab_name
+                        previous_tab_name = tab_name
 
                     # Fill dictionary ticker by ticker
                     for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
@@ -167,8 +178,8 @@ class TableScrapper:
                         parameter_value = self.driver_manager.driver.find_elements(
                             By.XPATH,
                             f"//*[@id='row{row_index}jqxGrid']/"
-                            f"div[{int(3 + column_index)}]/div")[
-                            0].text
+                            f"div[{int(3 + column_index)}]/div"
+                        )[0].text
                         company_attr_dict[ticker][param] = parameter_value
 
                 # Update the progress bar
@@ -177,9 +188,10 @@ class TableScrapper:
                 # Click on the clickable arrow on the table to progress in the pages
                 WebDriverWait(self.driver_manager.driver, 2).until(
                     ec.element_to_be_clickable(
-                        (By.XPATH,
-                         "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/div[4]/div"
-                         )
+                        (
+                            By.XPATH,
+                            "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/div[4]/div"
+                        )
                     )
                 ).click()
 
@@ -204,7 +216,6 @@ def main():
         writer = csv.writer(csv_file)
         for key, value in scrapped_data.items():
             writer.writerow([key, value])
-    scrapper.__del__()
 
 
 if __name__ == "__main__":
