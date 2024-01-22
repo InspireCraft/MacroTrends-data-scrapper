@@ -29,7 +29,7 @@ def create_driver(logger_str="info") -> "webdriver.chrome":
 
     path = os.path.dirname(os.path.abspath(__file__))
 
-    with open(f"{path}\\webdriverOptions.json") as webdriver_options:
+    with open(f"{path}/webdriverOptions.json") as webdriver_options:
         options_dict = json.load(webdriver_options)
 
     # Get desired webdriver options
