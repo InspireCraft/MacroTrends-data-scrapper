@@ -1,12 +1,15 @@
 # Import libraries
+import os
+import json
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
+
+from src.map_of_headers import MAP_OF_HEADERS
 from src.utils.Logger import Logger
-import json
+from src.utils.manage_driver import DriverManager
 
 
 class TableScrapper:
@@ -15,9 +18,6 @@ class TableScrapper:
 
     Attributes
     ----------
-    url : str
-        Website url
-
     tab_names : list of str
         list of the names of the table tabs
 
@@ -30,81 +30,60 @@ class TableScrapper:
 
     """
 
-    def __init__(self, url='https://www.macrotrends.net/stocks/stock-screener', str_logger="info"):
+    def __init__(self, str_logger="info"):
         """
         Construct instant variables.
 
         Parameters
         ----------
-        url : str
-              the url of the website that is going to be scrapped
         str_logger : str
               the functionality string of the logger object
         """
-        self.url = url
-        f = open("src/config.json")
-        config = json.load(f)
-        f.close()
-        self.tab_names = [elem for elem in config["tab_names"].keys()]
+        # URL of the website this table scrapper works
+        url = "https://www.macrotrends.net/stocks/stock-screener"
+
+        self.driver_manager = DriverManager()  # Initialize driver manager object
+        self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
 
-    def _create_driver(self) -> "webdriver.chrome":
-        """Create driver object.
+        # Read JSON file for parameters required to be searched
+        path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
+        with open(f"{path_for_search_parameters}/searchParameters.json") as parameters_to_search:
+            search_dict = json.load(parameters_to_search)
 
-        Driver is an WebDriver object that interacts with the website. Clicking,
-        reading are the methods of the driver object.
+        # Sort search parameters for efficient interaction with the website
+        self.search_params = self._sort_search_parameters(search_dict)
 
-        Parameters
-        ----------
-        None
+        # Print to CL what is searched
+        self.logger.info(f"Search Params = {self.search_params}...")
 
-        Returns
-        -------
-        driver : WebDriver object
-
-        """
-        self.logger.info("WebDriver is being created...")
-        options = Options()
-        options.add_argument("--headless")  # Run selenium without opening an actual browser
-
-        driver = webdriver.Chrome(options=options)  # Initialize the driver instance
-        driver.get(self.url)
-        self.logger.info("WebDriver is created!!!")
-        return driver
-
-    def _get_table_headers(self, driver: webdriver.Chrome):
-        """Get headers for each tab. tabs=self.tab_names.
+    @staticmethod
+    def _sort_search_parameters(search_dict):
+        """Sort tab_names for min amount of click interaction.
 
         Parameters
         ----------
-        driver : WebDriver object
+        search_dict : dict
+            dictionary of parameters
 
         Returns
         -------
-        header_list : dictionary
-            dictionary of tab_names with corresponding headers
-
+        Sorted list of parameters to be scrapped
         """
-        header_list = {}
-        for name in self.tab_names:
-            temp_list = []
-            # Each tab's XPATH has "id" given in the form below:
-            # id = "columns_<name_of_the_tab>"
-            # e.g. for tab "overview", id='columns_overview'
-            # To click a tab object, an XPATH -adress of the tab object- is required
-            # e.g. "*[@id='columns_overview']/a" => this is the XPATH for clickable overview tab
-            # The command below waits upto 10 secs for the given tab object is clickable
-            # Then if it is clickable it clicks on it.
-            WebDriverWait(driver, 10).until(
-                ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))).click()
-            table_headers = driver.find_elements(By.XPATH, "//*[@id='columntablejqxGrid']/div")
+        parameters = [element for element in search_dict["search_parameters"]]
 
-            temp_list = [elem.text for elem in table_headers[2:]]
-            header_list[name] = temp_list
+        # Get required tab_names to be clicked to search for parameters
+        tab_name_list = [
+            list(MAP_OF_HEADERS[element].keys())[0] for element in search_dict["search_parameters"]
+        ]
+        # Re-order parameters for efficient search (this allows less click interaction)
+        # Below line of code re-order parameter list such a way that the parameters
+        # sharing the same tab_name grouped together
+        # sorted(zip(param1,param2)) sorts according to param1
+        return [p for _, p in sorted(zip(tab_name_list, parameters))]
 
-        return header_list
-
-    def _get_num_of_rows(self, driver) -> "tuple[int,int,int]":
+    @staticmethod
+    def _get_num_of_rows(driver) -> "tuple[int,int,int]":
         """Check current row number, max row number in current page, total row number.
 
         Parameters
@@ -122,6 +101,10 @@ class TableScrapper:
         number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
         return current_initial_number, current_final_number, number_of_rows_in_the_list
 
+    def __del__(self):
+        """Shut down the driver."""
+        self.driver_manager.kill_driver()
+
     def scrap_the_table(self):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
@@ -134,55 +117,84 @@ class TableScrapper:
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        driver = self._create_driver()
+        # Let scrapping begin
         self.logger.info("SCRAPPING STARTED...")
-        (init_num, final_num, max_num) = self._get_num_of_rows(driver)
+
+        # Get number of rows per page and total
+        (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
+
+        # Initialize attribute dictionary
         company_attr_dict = {}
-        header_list = self._get_table_headers(driver)
+
         with tqdm(total=max_num) as pbar:
             while final_num != max_num:
-                (init_num, final_num, _) = self._get_num_of_rows(driver)
+                (init_num, final_num, _) = self._get_num_of_rows(
+                    self.driver_manager.driver
+                )
+                num_of_companies_on_page = final_num - init_num + 1
 
-                # Construct dict by creating company tickers
-                for row_index in range(final_num - init_num + 1):
+                ticker_list = []
+                # Pre-set the company tickers
+                for row_index in range(num_of_companies_on_page):
+                    # Get company tickers
                     company_ticker = (
-                        driver.find_elements(
+                        self.driver_manager.driver.find_elements(
                             By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
                             0].text)
                     company_attr_dict[company_ticker] = {}
 
-                for row_index in range(final_num - init_num + 1):
-                    com_tck = list(company_attr_dict.keys())[int(init_num + row_index - 1)]
-                    attr = driver.find_elements(
-                        By.XPATH, f"//*[@id='row{row_index}jqxGrid']/div[1]/div/div/a")[
-                        0].text
-                    company_attr_dict[com_tck]['name'] = attr
+                    # Get company names
+                    company_name = self.driver_manager.driver.find_elements(
+                        By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
+                                  f"div[1]/div/div/a")[0].text
+                    company_attr_dict[company_ticker]['name'] = company_name
 
-                # Fill the dictionary by the keys of the headers
-                for name in header_list.keys():
+                    # Store by-for-loop company tickers
+                    ticker_list.append(company_ticker)
+
+                # For each parameter to be scrapped, fill the dictionary
+                previous_tab_name = None
+                for param in self.search_params:
                     # Click the corresponding header
-                    WebDriverWait(driver, 10).until(
-                        ec.element_to_be_clickable((By.XPATH, f"//*[@id='columns_{name}']/a"))) \
-                        .click()
+                    tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
+                    column_index -= 1
 
-                    for column_index in range(len(header_list[name])):
-                        for row_index in range(final_num - init_num + 1):
-                            com_tck = list(company_attr_dict.keys())[
-                                int(init_num + row_index - 1)]
-                            attr = driver.find_elements(
-                                By.XPATH,
-                                f"//*[@id='row{row_index}jqxGrid']/"
-                                f"div[{int(3 + column_index)}]/div")[
-                                0].text
-                            company_attr_dict[com_tck][header_list[name][
-                                int(column_index)]] = attr
+                    # Check if clicking onto a tab name is required
+                    if previous_tab_name != tab_name:
+                        WebDriverWait(self.driver_manager.driver, 10).until(
+                            ec.element_to_be_clickable(
+                                (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
+                            )
+                        ).click()
 
-                pbar.update(20)
-                WebDriverWait(driver, 2).until(ec.element_to_be_clickable(
-                    (By.XPATH, "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/"
-                               "div[4]/div"))).click()
+                        previous_tab_name = tab_name
+
+                    # Fill dictionary ticker by ticker
+                    for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
+                        # Get parameter values
+                        parameter_value = self.driver_manager.driver.find_elements(
+                            By.XPATH,
+                            f"//*[@id='row{row_index}jqxGrid']/"
+                            f"div[{int(3 + column_index)}]/div"
+                        )[0].text
+                        company_attr_dict[ticker][param] = parameter_value
+
+                # Update the progress bar
+                pbar.update(int(num_of_companies_on_page))
+
+                # Click on the clickable arrow on the table to progress in the pages
+                WebDriverWait(self.driver_manager.driver, 2).until(
+                    ec.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/div[4]/div"
+                        )
+                    )
+                ).click()
 
         self.logger.info("SCRAPPING IS DONE!!!")
+        self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
+
         return company_attr_dict
 
 
@@ -194,9 +206,13 @@ def main():
     scrapped_data : dict
         Dictionary of the table in the given url
     """
+    import csv
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
-    return scrapped_data
+    with open('scrap_table_trial.csv', 'w') as csv_file:
+        writer = csv.writer(csv_file)
+        for key, value in scrapped_data.items():
+            writer.writerow([key, value])
 
 
 if __name__ == "__main__":
