@@ -48,7 +48,7 @@ class TableScrapper:
 
         # Read JSON file for parameters required to be searched
         path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
-        with open(f"{path_for_search_parameters}\\searchParameters.json") as parameters_to_search:
+        with open(f"{path_for_search_parameters}/searchParameters.json") as parameters_to_search:
             search_dict = json.load(parameters_to_search)
 
         # Sort search parameters for efficient interaction with the website
