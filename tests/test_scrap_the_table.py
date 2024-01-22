@@ -27,7 +27,7 @@ class TestTableScrapper(unittest.TestCase):
     def setUp(self):
         """Set up reused variables/objects."""
         url = 'https://www.macrotrends.net/stocks/stock-screener'
-        self.scrapper = TableScrapper(url=url, str_logger="none")
+        self.scrapper = TableScrapper(str_logger="none")
         self.driver = self.scrapper.driver_manager.driver
 
     def test_sort_search_parameters(self):
