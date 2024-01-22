@@ -1,5 +1,5 @@
 import unittest
-from src.utils.manage_driver import ManageDriver
+from src.utils.manage_driver import DriverManager
 
 
 class TestManageDriver(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestManageDriver(unittest.TestCase):
 
     def setUp(self):
         """Set up reused variables/objects."""
-        self.driver_manager = ManageDriver()
+        self.driver_manager = DriverManager()
 
     def test_set_up_driver(self):
         """Check if the driver gets the url."""
