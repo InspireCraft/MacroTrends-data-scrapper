@@ -26,14 +26,13 @@ class TestTableScrapper(unittest.TestCase):
 
     def setUp(self):
         """Set up reused variables/objects."""
-        url = 'https://www.macrotrends.net/stocks/stock-screener'
         self.scrapper = TableScrapper(str_logger="none")
         self.driver = self.scrapper.driver_manager.driver
 
     def test_sort_search_parameters(self):
         """Check if sorting works."""
         search_dict = {
-            "search_parameters":[
+            "search_parameters": [
                 "Market Cap",
                 "3 Year CAGR %",
                 "5 Year CAGR %",

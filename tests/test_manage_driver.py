@@ -3,7 +3,7 @@ from src.utils.manage_driver import DriverManager
 
 
 class TestManageDriver(unittest.TestCase):
-    """Class to be used to test ManageDriver class and its methods
+    """Class to be used to test ManageDriver class and its methods.
 
     Methods
     -------
