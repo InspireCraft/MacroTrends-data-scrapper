@@ -18,9 +18,6 @@ class TableScrapper:
 
     Attributes
     ----------
-    url : str
-        Website url
-
     tab_names : list of str
         list of the names of the table tabs
 
