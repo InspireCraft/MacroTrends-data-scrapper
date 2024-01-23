@@ -3,7 +3,7 @@ from map_of_headers import MAP_OF_HEADERS
 import json
 
 
-class GUI:
+class TableScrapperGUI:
     """
     Class to be used as GUI which enables user to select parameters to be searched.
 
@@ -57,8 +57,7 @@ class GUI:
         else:
             print("BUTTON STATE IS UNKNOWN !!!")
 
-    @staticmethod
-    def _close_window(win):
+    def _close_window(self):
         """Kill GUI.
 
         Parameters
@@ -67,7 +66,7 @@ class GUI:
             GUI window
 
         """
-        win.quit()
+        self.window.destroy()
 
     def _place_buttons(self):
         """Place clickable buttons on the GUI."""
@@ -103,7 +102,7 @@ class GUI:
 
             # When OK button is clicked, direct GUI to its kill method
             button_ok.config(
-                command=lambda win=self.window: self._close_window(win)
+                command=lambda _=self.window: self._close_window()
             )
 
     def forward(self):
@@ -122,7 +121,7 @@ class GUI:
 
 def main():
     """Run GUI."""
-    cl = GUI()
+    cl = TableScrapperGUI()
     cl.forward()
     print(cl.but_list)
 
