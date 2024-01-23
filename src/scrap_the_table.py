@@ -10,6 +10,7 @@ from tqdm import tqdm
 from src.map_of_headers import MAP_OF_HEADERS
 from src.utils.Logger import Logger
 from src.utils.manage_driver import DriverManager
+from src.gui_scrap_the_table import TableScrapperGUI
 
 
 class TableScrapper:
@@ -45,6 +46,10 @@ class TableScrapper:
         self.driver_manager = DriverManager()  # Initialize driver manager object
         self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
+
+        # Call TableScrapperGUI
+        gui = TableScrapperGUI()
+        gui.forward()  # Make user select what is desired to be searched
 
         # Read JSON file for parameters required to be searched
         path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
