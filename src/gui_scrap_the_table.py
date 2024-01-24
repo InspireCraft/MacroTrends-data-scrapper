@@ -19,12 +19,12 @@ class TableScrapperGUI:
     _place_buttons():
         Create GUI frame and place all selectable in it.
 
-    forward():
-        Start GUI to run, record what is clicked by user (only sunken) and save them in a JSON.
+    run_gui():
+        Start GUI, record what is clicked by user (only sunken) and save them in a JSON file.
     """
 
     def __init__(self):
-        """Construct GUI frame and button list."""
+        """Construct GUI frame, place button on it and initiate button list."""
         self.but_list = []  # List that holds what is clicked by th user
 
         # Create GUI frame (=window) with given name and Geometry
@@ -41,7 +41,7 @@ class TableScrapperGUI:
         Parameters
         ----------
         button: tk.Button() object
-            the button object
+            Button on the GUI
 
         """
         # Check the button state (sunken or raised). Alter the state.
@@ -59,14 +59,7 @@ class TableScrapperGUI:
             print("BUTTON STATE IS UNKNOWN !!!")
 
     def _close_window(self):
-        """Kill GUI.
-
-        Parameters
-        ----------
-        win: tk.Tk() object
-            GUI window
-
-        """
+        """Kill GUI."""
         self.window.destroy()
 
     def _place_buttons(self):
