@@ -26,13 +26,12 @@ class TestTableScrapper(unittest.TestCase):
 
     def setUp(self):
         """Set up reused variables/objects."""
-        self.scrapper = TableScrapper(str_logger="none")
+        self.scrapper = TableScrapper(params_to_be_searched=["Market Cap"], str_logger="none")
         self.driver = self.scrapper.driver_manager.driver
 
     def test_sort_search_parameters(self):
         """Check if sorting works."""
-        search_dict = {
-            "search_parameters": [
+        search_parameters = [
                 "Market Cap",
                 "3 Year CAGR %",
                 "5 Year CAGR %",
@@ -42,8 +41,8 @@ class TestTableScrapper(unittest.TestCase):
                 "1 Year % Change",
                 "30 Year CAGR %"
             ]
-        }
-        search_params = self.scrapper._sort_search_parameters(search_dict)
+
+        search_params = self.scrapper._sort_search_parameters(search_parameters)
 
         # Get headers after sorting/grouping
         header_list = [list(MAP_OF_HEADERS[name].keys())[0] for name in search_params]
