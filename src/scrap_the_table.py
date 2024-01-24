@@ -47,10 +47,6 @@ class TableScrapper:
         self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
 
-        # Call TableScrapperGUI
-        gui = TableScrapperGUI()
-        gui.run_gui()  # Make user select what is desired to be searched
-
         # Read JSON file for parameters required to be searched
         path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
         with open(f"{path_for_search_parameters}/searchParameters.json") as parameters_to_search:
@@ -212,6 +208,10 @@ def main():
         Dictionary of the table in the given url
     """
     import csv
+    # Call TableScrapperGUI
+    gui = TableScrapperGUI()
+    gui.run_gui()  # Make user select what is desired to be searched
+
     scrapper = TableScrapper()
     scrapped_data = scrapper.scrap_the_table()
     with open('scrap_table_trial.csv', 'w') as csv_file:
