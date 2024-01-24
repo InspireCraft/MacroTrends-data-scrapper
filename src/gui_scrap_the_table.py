@@ -96,7 +96,7 @@ class TableScrapperGUI:
 
             # When OK button is clicked, direct GUI to its kill method
             button_ok.config(
-                command=lambda _=self.window: self._close_window()
+                command=lambda: self._close_window()
             )
 
     def run_gui(self):
