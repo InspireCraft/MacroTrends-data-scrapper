@@ -36,7 +36,7 @@ class TableScrapperGUI:
         # Place all clickable buttons on the GUI frame
         self._place_buttons()
 
-    def _change_button_state(self, button):
+    def _change_button_state(self, button: tk.Button):
         """Change button state. If sunken, raise or vice versa.
 
         Parameters
