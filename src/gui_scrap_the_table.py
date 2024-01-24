@@ -47,13 +47,11 @@ class TableScrapperGUI:
         """
         # Check the button state (sunken or raised). Alter the state.
         if button["relief"] == "sunken":
-            button.config(relief="raised")  # Change button state: sunken -> raised
-            button.config(bg="WHITE")  # If button is raised change its color to white
+            button.config(relief="raised", bg="WHITE")  # Change button state: sunken -> raised
             # If already clicked button clicked again, remove the recorded item from the list
             self.button_list.remove(button.cget("text"))
         elif button["relief"] == "raised":
-            button.config(relief="sunken")  # Change button state: raised -> sunken
-            button.config(bg="GREEN")  # If button is sunken change its color to green
+            button.config(relief="sunken", bg="GREEN")  # Change button state: raised -> sunken
             # If an unclicked button is clicked. Add the item into the list to record.
             self.button_list.append(button.cget("text"))
         else:
@@ -118,7 +116,7 @@ def main():
     """Run GUI."""
     cl = TableScrapperGUI()
     cl.run_gui()
-    print(cl.but_list)
+    print(cl.button_list)
 
 
 if __name__ == "__main__":
