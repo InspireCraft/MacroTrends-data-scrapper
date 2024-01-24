@@ -24,7 +24,7 @@ class TableScrapperGUI:
     """
 
     def __init__(self):
-        """Construct necessary attributes."""
+        """Construct GUI frame and button list."""
         self.but_list = []  # List that holds what is clicked by th user
 
         # Create GUI frame (=window) with given name and Geometry
@@ -106,7 +106,7 @@ class TableScrapperGUI:
                 command=lambda _=self.window: self._close_window()
             )
 
-    def forward(self):
+    def run_gui(self):
         """Run GUI loop. Record what was clicked by user and save them in a JSON."""
         self.window.mainloop()  # Initiate GUI loop
 
@@ -123,7 +123,7 @@ class TableScrapperGUI:
 def main():
     """Run GUI."""
     cl = TableScrapperGUI()
-    cl.forward()
+    cl.run_gui()
     print(cl.but_list)
 
 
