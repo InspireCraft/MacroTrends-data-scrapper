@@ -1,5 +1,6 @@
-import tkinter as tk
 import json
+import tkinter as tk
+
 
 from src.map_of_headers import MAP_OF_HEADERS
 
