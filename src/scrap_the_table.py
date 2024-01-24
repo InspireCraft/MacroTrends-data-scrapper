@@ -1,7 +1,4 @@
 # Import libraries
-import os
-import json
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -37,6 +34,9 @@ class TableScrapper:
 
         Parameters
         ----------
+        params_to_be_searched : list[str]
+            the parameters to be searched that are submitted by the user
+
         str_logger : str
               the functionality string of the logger object
         """
