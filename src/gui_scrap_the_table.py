@@ -1,6 +1,7 @@
 import tkinter as tk
-from map_of_headers import MAP_OF_HEADERS
 import json
+
+from src.map_of_headers import MAP_OF_HEADERS
 
 
 class TableScrapperGUI:
