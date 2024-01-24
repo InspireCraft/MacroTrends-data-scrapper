@@ -31,7 +31,7 @@ class TableScrapper:
 
     """
 
-    def __init__(self, str_logger="info"):
+    def __init__(self, params_to_be_searched: list[str], str_logger="info"):
         """
         Construct instant variables.
 
@@ -47,19 +47,14 @@ class TableScrapper:
         self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
 
-        # Read JSON file for parameters required to be searched
-        path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
-        with open(f"{path_for_search_parameters}/searchParameters.json") as parameters_to_search:
-            search_dict = json.load(parameters_to_search)
-
         # Sort search parameters for efficient interaction with the website
-        self.search_params = self._sort_search_parameters(search_dict)
+        self.search_params = self._sort_search_parameters(params_to_be_searched)
 
         # Print to CL what is searched
         self.logger.info(f"Search Params = {self.search_params}...")
 
     @staticmethod
-    def _sort_search_parameters(search_dict):
+    def _sort_search_parameters(params_to_be_searched):
         """Sort tab_names for min amount of click interaction.
 
         Parameters
@@ -71,17 +66,14 @@ class TableScrapper:
         -------
         Sorted list of parameters to be scrapped
         """
-        parameters = [element for element in search_dict["search_parameters"]]
-
-        # Get required tab_names to be clicked to search for parameters
         tab_name_list = [
-            list(MAP_OF_HEADERS[element].keys())[0] for element in search_dict["search_parameters"]
+            list(MAP_OF_HEADERS[element].keys())[0] for element in params_to_be_searched
         ]
         # Re-order parameters for efficient search (this allows less click interaction)
         # Below line of code re-order parameter list such a way that the parameters
         # sharing the same tab_name grouped together
         # sorted(zip(param1,param2)) sorts according to param1
-        return [p for _, p in sorted(zip(tab_name_list, parameters))]
+        return [p for _, p in sorted(zip(tab_name_list, params_to_be_searched))]
 
     @staticmethod
     def _get_num_of_rows(driver) -> "tuple[int,int,int]":
@@ -210,9 +202,9 @@ def main():
     import csv
     # Call TableScrapperGUI
     gui = TableScrapperGUI()
-    gui.run_gui()  # Make user select what is desired to be searched
+    params_to_be_searched = gui.run_gui()  # Make user select what is desired to be searched
 
-    scrapper = TableScrapper()
+    scrapper = TableScrapper(params_to_be_searched)
     scrapped_data = scrapper.scrap_the_table()
     with open('scrap_table_trial.csv', 'w') as csv_file:
         writer = csv.writer(csv_file)
