@@ -26,7 +26,7 @@ class TableScrapperGUI:
 
     def __init__(self):
         """Construct GUI frame, place button on it and initiate button list."""
-        self.but_list = []  # List that holds what is clicked by th user
+        self.button_list = []  # List that holds what is clicked by th user
 
         # Create GUI frame (=window) with given name and Geometry
         self.window = tk.Tk(screenName="Parameters to Search")
@@ -50,14 +50,14 @@ class TableScrapperGUI:
             button.config(relief="raised")  # Change button state: sunken -> raised
             button.config(bg="WHITE")  # If button is raised change its color to white
             # If already clicked button clicked again, remove the recorded item from the list
-            self.but_list.remove(button.cget("text"))
+            self.button_list.remove(button.cget("text"))
         elif button["relief"] == "raised":
             button.config(relief="sunken")  # Change button state: raised -> sunken
             button.config(bg="GREEN")  # If button is sunken change its color to green
             # If an unclicked button is clicked. Add the item into the list to record.
-            self.but_list.append(button.cget("text"))
+            self.button_list.append(button.cget("text"))
         else:
-            print("BUTTON STATE IS UNKNOWN !!!")
+            raise ValueError("BUTTON STATE IS NEITHER SUNKEN NOR RAISED, IT IS UNKNOWN")
 
     def _close_window(self):
         """Kill GUI."""
@@ -78,10 +78,10 @@ class TableScrapperGUI:
         cntx_max = 3
         for character in search_params:
             # Create searchable parameters buttons
-            button_params = tk.Button(
+            parameter_button = tk.Button(
                 self.window, text=character, height=2, width=20, bg="WHITE", font="bold"
             )
-            button_params.grid(row=cnty, column=cntx)  # Position it on the GUI
+            parameter_button.grid(row=cnty, column=cntx)  # Position it on the GUI
 
             # Below if else is only for positioning purposes
             if cntx < cntx_max:
@@ -91,8 +91,8 @@ class TableScrapperGUI:
                 cnty += 1
 
             # When parameter button is clicked, change the state
-            button_params.config(
-                command=lambda button=button_params: self._change_button_state(button)
+            parameter_button.config(
+                command=lambda button=parameter_button: self._change_button_state(button)
             )
 
             # When OK button is clicked, direct GUI to its kill method
@@ -106,7 +106,7 @@ class TableScrapperGUI:
 
         # Create searchable parameter dictionary by using the recordings from GUI
         search_param_dict = {
-            "search_parameters": self.but_list
+            "search_parameters": self.button_list
         }
 
         # Generate JSON file using the dictionary above
