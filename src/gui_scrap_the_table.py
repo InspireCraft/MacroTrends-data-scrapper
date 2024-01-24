@@ -98,25 +98,17 @@ class TableScrapperGUI:
                 command=lambda: self._close_window()
             )
 
-    def run_gui(self):
+    def run_gui(self) -> list[str]:
         """Run GUI loop. Record what was clicked by user and save them in a JSON."""
         self.window.mainloop()  # Initiate GUI loop
-
-        # Create searchable parameter dictionary by using the recordings from GUI
-        search_param_dict = {
-            "search_parameters": self.button_list
-        }
-
-        # Generate JSON file using the dictionary above
-        with open("searchParameters.json", "w") as outfile:
-            json.dump(search_param_dict, outfile)
+        return self.button_list
 
 
 def main():
     """Run GUI."""
     cl = TableScrapperGUI()
-    cl.run_gui()
-    print(cl.button_list)
+    params_to_be_searched = cl.run_gui()
+    print(params_to_be_searched)
 
 
 if __name__ == "__main__":
