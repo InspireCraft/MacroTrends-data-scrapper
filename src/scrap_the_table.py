@@ -49,7 +49,7 @@ class TableScrapper:
 
         # Call TableScrapperGUI
         gui = TableScrapperGUI()
-        gui.forward()  # Make user select what is desired to be searched
+        gui.run_gui()  # Make user select what is desired to be searched
 
         # Read JSON file for parameters required to be searched
         path_for_search_parameters = os.path.dirname(os.path.abspath(__file__))
