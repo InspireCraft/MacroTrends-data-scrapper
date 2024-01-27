@@ -32,15 +32,15 @@ class TestTableScrapper(unittest.TestCase):
     def test_sort_search_parameters(self):
         """Check if sorting works."""
         search_parameters = [
-                "Market Cap",
-                "3 Year CAGR %",
-                "5 Year CAGR %",
-                "Price/Earnings Ratio",
-                "PEG Ratio",
-                "Closing Price",
-                "1 Year % Change",
-                "30 Year CAGR %"
-            ]
+            "Market Cap",
+            "3 Year CAGR %",
+            "5 Year CAGR %",
+            "Price/Earnings Ratio",
+            "PEG Ratio",
+            "Closing Price",
+            "1 Year % Change",
+            "30 Year CAGR %"
+        ]
 
         search_params = self.scrapper._sort_search_parameters(search_parameters)
 
