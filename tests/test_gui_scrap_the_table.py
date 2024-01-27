@@ -43,9 +43,5 @@ class TestCreateDriver(unittest.TestCase):
         self.assertEqual(self.dummy_button["relief"], "raised")
 
 
-
-
-
-
 if __name__ == "__main__":
     unittest.main(warnings='ignore')
