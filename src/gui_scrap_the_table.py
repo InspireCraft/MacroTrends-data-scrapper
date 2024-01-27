@@ -26,6 +26,8 @@ class TableScrapperGUI:
         """Construct GUI frame, place button on it and initiate button list."""
         self.button_list = []  # List that holds what is clicked by th user
 
+    def _create_gui_frame(self):
+        """Construct the GUI frame."""
         # Create GUI frame (=window) with given name and Geometry
         self.window = tk.Tk(screenName="Parameters to Search")
         self.window.geometry("800x740")  # Width x Height
@@ -114,6 +116,7 @@ class TableScrapperGUI:
 
     def run_gui(self) -> list[str]:
         """Run GUI loop. Record what was clicked by user and save them in a JSON."""
+        self._create_gui_frame()
         self.window.mainloop()  # Initiate GUI loop
         return self.button_list
 
