@@ -16,31 +16,31 @@ class TestCreateDriver(unittest.TestCase):
     def setUp(self) -> None:
         """Set up parameters."""
         self.gui = TableScrapperGUI()
-        self.dummy_button = tk.Button(self.gui.window, )
-        self.dummy_button.config(
-            command=lambda button=self.dummy_button: self.gui._change_button_state(button)
-        )
 
-    def tearDown(self) -> None:
-        """Kill GUI."""
-        self.gui._close_window()
+    # def tearDown(self) -> None:
+    #     """Kill GUI."""
+    #     self.gui._close_window()
 
     def test_change_button_state(self):
         """Check button relief before and after it is clicked."""
+        dummy_button = tk.Button()
+        dummy_button.config(
+            command=lambda button=dummy_button: self.gui._change_button_state(button)
+        )
         # When not clicked, button should be raised
-        self.assertEqual(self.dummy_button["relief"], "raised")
+        self.assertEqual(dummy_button["relief"], "raised")
 
         # Click the button
-        self.dummy_button.invoke()
+        dummy_button.invoke()
 
         # After it is clicked it should be sunken
-        self.assertEqual(self.dummy_button["relief"], "sunken")
+        self.assertEqual(dummy_button["relief"], "sunken")
 
         # Click the button again
-        self.dummy_button.invoke()
+        dummy_button.invoke()
 
         # If it is sunken, button should be raised after the click
-        self.assertEqual(self.dummy_button["relief"], "raised")
+        self.assertEqual(dummy_button["relief"], "raised")
 
 
 if __name__ == "__main__":
