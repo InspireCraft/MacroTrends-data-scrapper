@@ -65,26 +65,42 @@ class TableScrapperGUI:
         button_ok = tk.Button(
             self.window, text="OK", height=5, width=20, bg="RED", font="bold"
         )
-        button_ok.grid(row=15, column=3)  # Position of the OK button
 
-        # Get all the searchable elements
+        # Position of the OK button
+        ok_button_position_row = 15  # Row position
+        ob_button_position_column = 3  # Column position
+        button_ok.grid(
+            row=ok_button_position_row,
+            column=ob_button_position_column
+        )
+
+        # Get the names of all the parameters
         search_params = [element for element in MAP_OF_HEADERS.keys()]
 
-        cntx, cnty = 0, 0  # Initiate counters for button positioning on GUI
-        cntx_max = 3
+        # Initiate position counters for parameter button
+        parameter_button_position_row = 0
+        parameter_button_position_column = 0
+
+        # Set maximum number of columns
+        parameter_button_position_column_max = 3
+
+        # Start positioning the buttons
         for character in search_params:
             # Create searchable parameters buttons
             parameter_button = tk.Button(
                 self.window, text=character, height=2, width=20, bg="WHITE", font="bold"
             )
-            parameter_button.grid(row=cnty, column=cntx)  # Position it on the GUI
+            parameter_button.grid(
+                row=parameter_button_position_row,
+                column=parameter_button_position_column
+            )  # Position it on the GUI
 
             # Below if else is only for positioning purposes
-            if cntx < cntx_max:
-                cntx += 1
+            if parameter_button_position_column < parameter_button_position_column_max:
+                parameter_button_position_column += 1
             else:
-                cntx = 0
-                cnty += 1
+                parameter_button_position_column = 0
+                parameter_button_position_row += 1
 
             # When parameter button is clicked, change the state
             parameter_button.config(
