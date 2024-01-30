@@ -26,7 +26,7 @@ class TestTableScrapper(unittest.TestCase):
 
     def setUp(self):
         """Set up reused variables/objects."""
-        self.scrapper = TableScrapper(params_to_be_searched=["Market Cap"], str_logger="none")
+        self.scrapper = TableScrapper(str_logger="none")
         self.driver = self.scrapper.driver_manager.driver
 
     def test_sort_search_parameters(self):
