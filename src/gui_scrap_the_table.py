@@ -9,6 +9,12 @@ class TableScrapperGUI:
 
     Methods
     -------
+    _record_clicked_buttons(button):
+        Record clicked buttons.
+
+    _create_buttons(button_text):
+        Generate buttons associating with their texts.
+
     _change_button_state(button):
         Alter button state after click. If it is sunken, raise or vice versa.
 
@@ -16,18 +22,22 @@ class TableScrapperGUI:
         Kill GUI
 
     _place_buttons():
-        Create GUI frame and place all selectable in it.
+        Place clickable buttons on the GUI.
 
     run_gui():
-        Start GUI, record what is clicked by user (only sunken) and save them in a JSON file.
+        Start GUI, record what is clicked by user (only sunken) and return it.
     """
 
-    def __init__(self, screen_name="Parameters to Search", geometry="800x740", title="SEARCH PARAMETERS"):
-        """Construct GUI frame, place button on it and initiate button list."""
+    def __init__(self,
+                 screen_name="Parameters to Search",
+                 geometry="800x740",
+                 title="SEARCH PARAMETERS"):
+        """Construct GUI frame, and initiate a list that records sunken button."""
         self.window = tk.Tk(screenName=screen_name)
         self.window.geometry(geometry)  # Width x Height
         self.window.title(title)
 
+        # Initiate a list that records the texts of the sunken buttons
         self.sunken_button_list = []
 
     def _record_clicked_buttons(self, button):
@@ -67,12 +77,19 @@ class TableScrapperGUI:
         """Kill GUI."""
         self.window.destroy()
 
-    def _create_buttons(self, search_params):
+    def _create_buttons(self, button_text):
+        """Generate buttons associating with their texts.
+
+        Returns
+        -------
+        button_dictionary : dict[tk.Button]
+            Dictionary of buttons. Keys are the texts of the buttons
+        """
         # Initiate button dictionary
         button_dictionary = {}
 
-        # Create buttons for paramaters to be searched
-        for txt in search_params:
+        # Create buttons for each text given by the user
+        for txt in button_text:
             button_dictionary[txt] = tk.Button(
                 self.window, text=txt, height=2, width=20, bg="WHITE", font="bold"
             )
@@ -82,8 +99,8 @@ class TableScrapperGUI:
             #
             # In the first one, x is a free variable bound at execution time of lambda expression
             # Lambda function captures x at run time. At run time, the value of x is the latest
-            # search_params. Therefore, change_button_state function is only valid for
-            # button_dictionary[search_params[-1]]
+            # button_text. Therefore, change_button_state function is only valid for
+            # button_dictionary[button_text[-1]]
             #
             # In the second one,lambda function is initialized with a default value x.
             # I.e., corresponding button_dictionary[txt]
@@ -141,10 +158,15 @@ class TableScrapperGUI:
                 parameter_button_position_column = 0
                 parameter_button_position_row += 1
 
-    def run_gui(self, search_params ) -> list[str]:
-        """Run GUI loop. Record what was clicked by user and save them in a JSON."""
+    def run_gui(self, search_params) -> list[str]:
+        """Run GUI loop. Record what was clicked by user and return it.
 
-        button_dictionary=self._create_buttons(search_params)
+        Returns
+        -------
+        self.sunken_button_list : list[str]
+            list of clicked buttons
+        """
+        button_dictionary = self._create_buttons(search_params)
         self._place_buttons(button_dictionary)
         self.window.mainloop()  # Initiate GUI loop
         return self.sunken_button_list
@@ -154,8 +176,8 @@ def main():
     """Run GUI."""
     search_params = [element for element in MAP_OF_HEADERS.keys()]
     gui = TableScrapperGUI()
-    parameters_to_be_searched = gui.run_gui(search_params)
-    print(parameters_to_be_searched)
+    parameters_to_be_scrapped = gui.run_gui(search_params)
+    print(parameters_to_be_scrapped)
 
 
 if __name__ == "__main__":
