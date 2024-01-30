@@ -3,9 +3,9 @@ import os
 
 from src.map_of_headers import MAP_OF_HEADERS
 
-# The code below enables test of this class to run on GitHub
-if os.environ.get("DISPLAY", "") == "":
-    os.environ.__setitem__("DISPLAY", ":0.0")
+# # The code below enables test of this class to run on GitHub
+# if os.environ.get("DISPLAY", "") == "":
+#     os.environ.__setitem__("DISPLAY", ":0.0")
 
 
 class TableScrapperGUI:
@@ -27,21 +27,31 @@ class TableScrapperGUI:
         Start GUI, record what is clicked by user (only sunken) and save them in a JSON file.
     """
 
-    def __init__(self):
+    def __init__(self, screen_name="Parameters to Search", geometry="800x740", title="SEARCH PARAMETERS"):
         """Construct GUI frame, place button on it and initiate button list."""
-        self.button_list = []  # List that holds what is clicked by th user
+        self.window = tk.Tk(screenName=screen_name)
+        self.window.geometry(geometry)  # Width x Height
+        self.window.title(title)
 
-    def _create_gui_frame(self):
-        """Construct the GUI frame."""
-        # Create GUI frame (=window) with given name and Geometry
-        self.window = tk.Tk(screenName="Parameters to Search")
-        self.window.geometry("800x740")  # Width x Height
-        self.window.title("SEARCH PARAMETERS")
+        self.sunken_button_list = []
 
-        # Place all clickable buttons on the GUI frame
-        self._place_buttons()
+    def _record_clicked_buttons(self, button):
+        """Record clicked buttons."""
+        text = button.cget("text")  # Get the text on the button
+        # This function is called when a button is clicked.
+        # It records the text on the clicked button.
+        # if the text on the button is already in the list, it means
+        # that it was already clicked before, so it is clicked again
+        # Therefore, this function checks if the text on the button is
+        # in the list, and if so, it removes from the list, if not, it adds
+        # to the list
+        if text in self.sunken_button_list:
+            self.sunken_button_list.remove(text)
+        else:
+            self.sunken_button_list.append(text)
 
-    def _change_button_state(self, button: tk.Button):
+    @staticmethod
+    def _change_button_state(button: tk.Button):
         """Change button state. If sunken, raise or vice versa.
 
         Parameters
@@ -53,12 +63,8 @@ class TableScrapperGUI:
         # Check the button state (sunken or raised). Alter the state.
         if button["relief"] == "sunken":
             button.config(relief="raised", bg="WHITE")  # Change button state: sunken -> raised
-            # If already clicked button clicked again, remove the recorded item from the list
-            self.button_list.remove(button.cget("text"))
         elif button["relief"] == "raised":
             button.config(relief="sunken", bg="GREEN")  # Change button state: raised -> sunken
-            # If an unclicked button is clicked. Add the item into the list to record.
-            self.button_list.append(button.cget("text"))
         else:
             raise ValueError("BUTTON STATE IS NEITHER SUNKEN NOR RAISED, IT IS UNKNOWN")
 
@@ -66,23 +72,56 @@ class TableScrapperGUI:
         """Kill GUI."""
         self.window.destroy()
 
-    def _place_buttons(self):
-        """Place clickable buttons on the GUI."""
+    def _create_buttons(self, search_params):
+        # Initiate button dictionary
+        button_dictionary = {}
+
+        # Create buttons for paramaters to be searched
+        for txt in search_params:
+            button_dictionary[txt] = tk.Button(
+                self.window, text=txt, height=2, width=20, bg="WHITE", font="bold"
+            )
+            # assume:  x = button_dictionary[txt]
+            # The difference between:
+            # lambda x: func(x)   and   lambda a=x : func(a)
+            #
+            # In the first one, x is a free variable bound at execution time of lambda expression
+            # Lambda function captures x at run time. At run time, the value of x is the latest
+            # search_params. Therefore, change_button_state function is only valid for
+            # button_dictionary[search_params[-1]]
+            #
+            # In the second one,lambda function is initialized with a default value x.
+            # I.e., corresponding button_dictionary[txt]
+            # When executed, in run-time, it is called with its default value.
+            # Therefore, change_button_state function is valid for each button
+            button_dictionary[txt].config(
+                command=lambda button=button_dictionary[txt]: [
+                    self._change_button_state(button),
+                    self._record_clicked_buttons(button)
+                ]
+            )
+
         # Create "OK" button
-        button_ok = tk.Button(
+        button_dictionary["OK"] = tk.Button(
             self.window, text="OK", height=5, width=20, bg="RED", font="bold"
         )
 
+        # When OK button is clicked, direct GUI to its kill method
+        button_dictionary["OK"].config(
+            command=self._close_window
+        )
+        return button_dictionary
+
+    @staticmethod
+    def _place_buttons(button_dictionary):
+        """Place clickable buttons on the GUI."""
         # Position of the OK button
         ok_button_position_row = 15  # Row position
         ob_button_position_column = 3  # Column position
-        button_ok.grid(
+        button_dictionary["OK"].grid(
             row=ok_button_position_row,
             column=ob_button_position_column
         )
-
-        # Get the names of all the parameters
-        search_params = [element for element in MAP_OF_HEADERS.keys()]
 
         # Initiate position counters for parameter button
         parameter_button_position_row = 0
@@ -92,12 +131,10 @@ class TableScrapperGUI:
         parameter_button_position_column_max = 3
 
         # Start positioning the buttons
-        for character in search_params:
-            # Create searchable parameters buttons
-            parameter_button = tk.Button(
-                self.window, text=character, height=2, width=20, bg="WHITE", font="bold"
-            )
-            parameter_button.grid(
+        search_params = list(button_dictionary.keys())
+        search_params.remove("OK")
+        for txt in search_params:
+            button_dictionary[txt].grid(
                 row=parameter_button_position_row,
                 column=parameter_button_position_column
             )  # Position it on the GUI
@@ -109,28 +146,21 @@ class TableScrapperGUI:
                 parameter_button_position_column = 0
                 parameter_button_position_row += 1
 
-            # When parameter button is clicked, change the state
-            parameter_button.config(
-                command=lambda button=parameter_button: self._change_button_state(button)
-            )
-
-            # When OK button is clicked, direct GUI to its kill method
-            button_ok.config(
-                command=self._close_window
-            )
-
-    def run_gui(self) -> list[str]:
+    def run_gui(self, search_params ) -> list[str]:
         """Run GUI loop. Record what was clicked by user and save them in a JSON."""
-        self._create_gui_frame()
+
+        button_dictionary=self._create_buttons(search_params)
+        self._place_buttons(button_dictionary)
         self.window.mainloop()  # Initiate GUI loop
-        return self.button_list
+        return self.sunken_button_list
 
 
 def main():
     """Run GUI."""
-    cl = TableScrapperGUI()
-    params_to_be_searched = cl.run_gui()
-    print(params_to_be_searched)
+    search_params = [element for element in MAP_OF_HEADERS.keys()]
+    gui = TableScrapperGUI()
+    parameters_to_be_searched = gui.run_gui(search_params)
+    print(parameters_to_be_searched)
 
 
 if __name__ == "__main__":
