@@ -13,33 +13,21 @@ class TestCreateDriver(unittest.TestCase):
         check if the created driver object is WebDriver object
     """
 
-    def setUp(self) -> None:
-        """Set up parameters."""
-        self.gui = TableScrapperGUI()
-
-    # def tearDown(self) -> None:
-    #     """Kill GUI."""
-    #     self.gui._close_window()
-
     def test_change_button_state(self):
         """Check button relief before and after it is clicked."""
-        dummy_button = tk.Button()
-        dummy_button.config(
-            command=lambda button=dummy_button: self.gui._change_button_state(button)
-        )
-        # When not clicked, button should be raised
+        dummy_button = tk.Button()  # Initialize dummy button
+
+        # When initialized, the button is in "raised" state
         self.assertEqual(dummy_button["relief"], "raised")
 
-        # Click the button
-        dummy_button.invoke()
-
-        # After it is clicked it should be sunken
+        # Pass the button through the function
+        TableScrapperGUI._change_button_state(dummy_button)
+        # Check if it altered its state
         self.assertEqual(dummy_button["relief"], "sunken")
 
-        # Click the button again
-        dummy_button.invoke()
-
-        # If it is sunken, button should be raised after the click
+        # Pass the button through the function again
+        TableScrapperGUI._change_button_state(dummy_button)
+        # Check if it altered its state
         self.assertEqual(dummy_button["relief"], "raised")
 
 
