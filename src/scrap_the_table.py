@@ -28,7 +28,7 @@ class TableScrapper:
 
     """
 
-    def __init__(self, params_to_be_searched: list[str], str_logger="info"):
+    def __init__(self, str_logger="info"):
         """
         Construct instant variables.
 
@@ -46,12 +46,6 @@ class TableScrapper:
         self.driver_manager = DriverManager()  # Initialize driver manager object
         self.driver_manager.set_up_driver(url=url)  # Set up the driver by using the url
         self.logger = Logger(self.__class__.__name__, str_logger)
-
-        # Sort search parameters for efficient interaction with the website
-        self.search_params = self._sort_search_parameters(params_to_be_searched)
-
-        # Print to CL what is searched
-        self.logger.info(f"Search Params = {self.search_params}...")
 
     @staticmethod
     def _sort_search_parameters(params_to_be_searched):
@@ -98,18 +92,25 @@ class TableScrapper:
         """Shut down the driver."""
         self.driver_manager.kill_driver()
 
-    def scrap_the_table(self):
+    def scrap_the_table(self, params_to_be_scrapped: list[str]):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
         Parameters
         ----------
-        None
+        params_to_be_scrapped: list[str]
+            user input of desired parameters to be scrapped
 
         Returns
         -------
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
+        # Sort search parameters for efficient interaction with the website
+        scrap_params = self._sort_search_parameters(params_to_be_scrapped)
+
+        # Print to CL what is searched
+        self.logger.info(f"Search Params = {scrap_params}...")
+
         # Let scrapping begin
         self.logger.info("SCRAPPING STARTED...")
 
@@ -147,7 +148,7 @@ class TableScrapper:
 
                 # For each parameter to be scrapped, fill the dictionary
                 previous_tab_name = None
-                for param in self.search_params:
+                for param in scrap_params:
                     # Click the corresponding header
                     tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
                     column_index -= 1
@@ -186,7 +187,7 @@ class TableScrapper:
                 ).click()
 
         self.logger.info("SCRAPPING IS DONE!!!")
-        self.logger.info(f"SCRAPPED DATA: {self.search_params} ")
+        self.logger.info(f"SCRAPPED DATA: {scrap_params} ")
 
         return company_attr_dict
 
@@ -200,12 +201,13 @@ def main():
         Dictionary of the table in the given url
     """
     import csv
-    # Call TableScrapperGUI
-    gui = TableScrapperGUI()
-    params_to_be_searched = gui.run_gui()  # Make user select what is desired to be searched
+    search_params = [element for element in MAP_OF_HEADERS.keys()]
 
-    scrapper = TableScrapper(params_to_be_searched)
-    scrapped_data = scrapper.scrap_the_table()
+    gui = TableScrapperGUI()  # Call TableScrapperGUI
+    parameters_to_be_scrapped = gui.run_gui(search_params)
+
+    scrapper = TableScrapper()  # Initiate TableScrapper
+    scrapped_data = scrapper.scrap_the_table(parameters_to_be_scrapped)
     with open('scrap_table_trial.csv', 'w') as csv_file:
         writer = csv.writer(csv_file)
         for key, value in scrapped_data.items():
