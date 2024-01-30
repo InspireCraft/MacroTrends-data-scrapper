@@ -1,5 +1,6 @@
 import unittest
 import tkinter as tk
+import os
 
 from src.gui_scrap_the_table import TableScrapperGUI
 
@@ -12,6 +13,11 @@ class TestCreateDriver(unittest.TestCase):
     test_create_drivers():
         check if the created driver object is WebDriver object
     """
+
+    def setUp(self) -> None:
+        if os.environ.get('DISPLAY', '') == '':
+            print('no display found. Using :0.0')
+            os.environ.__setitem__('DISPLAY', ':0.0')
 
     def test_change_button_state(self):
         """Check button relief before and after it is clicked."""
