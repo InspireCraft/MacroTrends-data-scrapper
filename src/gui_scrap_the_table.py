@@ -1,11 +1,6 @@
 import tkinter as tk
-import os
 
 from src.map_of_headers import MAP_OF_HEADERS
-
-# # The code below enables test of this class to run on GitHub
-# if os.environ.get("DISPLAY", "") == "":
-#     os.environ.__setitem__("DISPLAY", ":0.0")
 
 
 class TableScrapperGUI:
