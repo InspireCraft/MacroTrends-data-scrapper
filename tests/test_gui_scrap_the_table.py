@@ -15,9 +15,8 @@ class TestCreateDriver(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        if os.environ.get('DISPLAY', '') == '':
-            print('no display found. Using :0.0')
-            os.environ.__setitem__('DISPLAY', ':0.0')
+        """Set up display."""
+        os.environ['DISPLAY'] = ':99'
 
     def test_change_button_state(self):
         """Check button relief before and after it is clicked."""
