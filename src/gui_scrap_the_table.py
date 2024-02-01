@@ -47,7 +47,7 @@ class TableScrapperGUI:
         self.sunken_button_list = []
 
     def _set_up_gui(self):
-        """Create and Place the buttons on the gui"""
+        """Create and Place the buttons on the gui."""
         # Get parameters that are desired to be scrapped by the user
         search_params = [element for element in MAP_OF_HEADERS.keys()]
 
