@@ -16,10 +16,8 @@ class TableScrapper:
 
     Attributes
     ----------
-    tab_names : list of str
-        list of the names of the table tabs
-
-    logger : Logger object
+    str_logger : str
+        logger_level
 
     Methods
     -------
@@ -34,9 +32,6 @@ class TableScrapper:
 
         Parameters
         ----------
-        params_to_be_searched : list[str]
-            the parameters to be searched that are submitted by the user
-
         str_logger : str
               the functionality string of the logger object
         """
@@ -53,8 +48,8 @@ class TableScrapper:
 
         Parameters
         ----------
-        search_dict : dict
-            dictionary of parameters
+        params_to_be_searched : list[str]
+            list of parameters
 
         Returns
         -------
@@ -92,21 +87,20 @@ class TableScrapper:
         """Shut down the driver."""
         self.driver_manager.kill_driver()
 
-    def scrap_the_table(self, params_to_be_scrapped: list[str]):
+    def scrap_the_table(self):
         """Scrap the whole table including all tabs and pages in macro-trend.
-
-        Parameters
-        ----------
-        params_to_be_scrapped: list[str]
-            user input of desired parameters to be scrapped
 
         Returns
         -------
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
+        # Call GUI to interact with the user
+        gui = TableScrapperGUI()
+        parameters_to_be_scrapped = gui.run_gui()  # Get desired params from user
+
         # Sort search parameters for efficient interaction with the website
-        scrap_params = self._sort_search_parameters(params_to_be_scrapped)
+        scrap_params = self._sort_search_parameters(parameters_to_be_scrapped)
 
         # Print to CL what is searched
         self.logger.info(f"Search Params = {scrap_params}...")
@@ -201,13 +195,8 @@ def main():
         Dictionary of the table in the given url
     """
     import csv
-    search_params = [element for element in MAP_OF_HEADERS.keys()]
-
-    gui = TableScrapperGUI()  # Call TableScrapperGUI
-    parameters_to_be_scrapped = gui.run_gui(search_params)
-
     scrapper = TableScrapper()  # Initiate TableScrapper
-    scrapped_data = scrapper.scrap_the_table(parameters_to_be_scrapped)
+    scrapped_data = scrapper.scrap_the_table()
     with open('scrap_table_trial.csv', 'w') as csv_file:
         writer = csv.writer(csv_file)
         for key, value in scrapped_data.items():
