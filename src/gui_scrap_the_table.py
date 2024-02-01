@@ -9,6 +9,9 @@ class TableScrapperGUI:
 
     Methods
     -------
+    _set_up_gui():
+        Create and Place the buttons on the gui
+
     _record_clicked_buttons(button):
         Record clicked buttons.
 
@@ -37,8 +40,22 @@ class TableScrapperGUI:
         self.window.geometry(geometry)  # Width x Height
         self.window.title(title)
 
+        # Set up the GUI
+        self._set_up_gui()
+
         # Initiate a list that records the texts of the sunken buttons
         self.sunken_button_list = []
+
+    def _set_up_gui(self):
+        """Create and Place the buttons on the gui"""
+        # Get parameters that are desired to be scrapped by the user
+        search_params = [element for element in MAP_OF_HEADERS.keys()]
+
+        # Create buttons for the GUI
+        button_dictionary = self._create_buttons(search_params)
+
+        # Place the buttons on the GUI frame
+        self._place_buttons(button_dictionary)
 
     def _record_clicked_buttons(self, button):
         """Record clicked buttons."""
@@ -158,7 +175,7 @@ class TableScrapperGUI:
                 parameter_button_position_column = 0
                 parameter_button_position_row += 1
 
-    def run_gui(self, search_params) -> list[str]:
+    def run_gui(self) -> list[str]:
         """Run GUI loop. Record what was clicked by user and return it.
 
         Returns
@@ -166,17 +183,14 @@ class TableScrapperGUI:
         self.sunken_button_list : list[str]
             list of clicked buttons
         """
-        button_dictionary = self._create_buttons(search_params)
-        self._place_buttons(button_dictionary)
         self.window.mainloop()  # Initiate GUI loop
         return self.sunken_button_list
 
 
 def main():
     """Run GUI."""
-    search_params = [element for element in MAP_OF_HEADERS.keys()]
     gui = TableScrapperGUI()
-    parameters_to_be_scrapped = gui.run_gui(search_params)
+    parameters_to_be_scrapped = gui.run_gui()
     print(parameters_to_be_scrapped)
 
 
