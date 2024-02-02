@@ -89,7 +89,7 @@ class TableScrapper:
         """Shut down the driver."""
         self.driver_manager.kill_driver()
 
-    def scrap_the_table(self, parameters_to_be_scrapped=math.nan):
+    def scrap_the_table(self, parameters_to_be_scrapped=None):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
         Parameters
@@ -102,7 +102,7 @@ class TableScrapper:
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        if math.isnan(parameters_to_be_scrapped):
+        if parameters_to_be_scrapped is None:
             # Call GUI to interact with the user
             gui = TableScrapperGUI()
             parameters_to_be_scrapped = gui.run_gui()  # Get desired params from user
