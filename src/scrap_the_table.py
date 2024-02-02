@@ -1,4 +1,6 @@
 # Import libraries
+import math
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -87,17 +89,23 @@ class TableScrapper:
         """Shut down the driver."""
         self.driver_manager.kill_driver()
 
-    def scrap_the_table(self):
+    def scrap_the_table(self, parameters_to_be_scrapped=math.nan):
         """Scrap the whole table including all tabs and pages in macro-trend.
+
+        Parameters
+        ----------
+        parameters_to_be_scrapped : list[str]
+            user inputted list of parameters to be scrapper
 
         Returns
         -------
         company_attr_dict : dict
             dictionary of the companies associated with their properties
         """
-        # Call GUI to interact with the user
-        gui = TableScrapperGUI()
-        parameters_to_be_scrapped = gui.run_gui()  # Get desired params from user
+        if math.isnan(parameters_to_be_scrapped):
+            # Call GUI to interact with the user
+            gui = TableScrapperGUI()
+            parameters_to_be_scrapped = gui.run_gui()  # Get desired params from user
 
         # Sort search parameters for efficient interaction with the website
         scrap_params = self._sort_search_parameters(parameters_to_be_scrapped)
