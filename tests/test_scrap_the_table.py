@@ -31,19 +31,18 @@ class TestTableScrapper(unittest.TestCase):
 
     def test_sort_search_parameters(self):
         """Check if sorting works."""
-        search_dict = {
-            "search_parameters": [
-                "Market Cap",
-                "3 Year CAGR %",
-                "5 Year CAGR %",
-                "Price/Earnings Ratio",
-                "PEG Ratio",
-                "Closing Price",
-                "1 Year % Change",
-                "30 Year CAGR %"
-            ]
-        }
-        search_params = self.scrapper._sort_search_parameters(search_dict)
+        search_parameters = [
+            "Market Cap",
+            "3 Year CAGR %",
+            "5 Year CAGR %",
+            "Price/Earnings Ratio",
+            "PEG Ratio",
+            "Closing Price",
+            "1 Year % Change",
+            "30 Year CAGR %"
+        ]
+
+        search_params = self.scrapper._sort_search_parameters(search_parameters)
 
         # Get headers after sorting/grouping
         header_list = [list(MAP_OF_HEADERS[name].keys())[0] for name in search_params]
