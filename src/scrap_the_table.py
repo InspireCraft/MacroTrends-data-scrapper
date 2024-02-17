@@ -1,4 +1,5 @@
 # Import libraries
+import csv
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -83,6 +84,32 @@ class TableScrapper:
         current_final_number = int(temp[0].text.split("-")[1].split(" ")[0])
         number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
         return current_initial_number, current_final_number, number_of_rows_in_the_list
+
+    @staticmethod
+    def save_to_csv(scrapped_data: dict, name_of_csv: str):
+        """Save scrapped data to a csv file.
+
+        Parameters
+        ----------
+        scrapped_data : dict
+            company_attribute_dict
+
+        name_of_csv : str
+            name of the csv file that is wanted to be created
+        """
+        # Extract column names from the inner dictionaries
+        column_names = set()
+        for value in scrapped_data.values():
+            column_names.update(value.keys())
+
+        # Write to CSV
+        with open(name_of_csv+'.csv', 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=[''] + list(column_names))
+            writer.writeheader()
+            for key, value in scrapped_data.items():
+                row = {'': key}
+                row.update(value)
+                writer.writerow(row)
 
     def __del__(self):
         """Shut down the driver."""
@@ -201,23 +228,9 @@ def main():
     scrapped_data : dict
         Dictionary of the table in the given url
     """
-    import csv
     scrapper = TableScrapper()  # Initiate TableScrapper
     scrapped_data = scrapper.scrap_the_table()
-
-    # Extract column names from the inner dictionaries
-    column_names = set()
-    for value in scrapped_data.values():
-        column_names.update(value.keys())
-
-    # Write to CSV
-    with open('scrapped_properties.csv', 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=[''] + list(column_names))
-        writer.writeheader()
-        for key, value in scrapped_data.items():
-            row = {'': key}
-            row.update(value)
-            writer.writerow(row)
+    scrapper.save_to_csv(scrapped_data, "scrapped_properties")
 
 
 if __name__ == "__main__":
