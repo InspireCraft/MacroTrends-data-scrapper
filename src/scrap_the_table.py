@@ -204,10 +204,20 @@ def main():
     import csv
     scrapper = TableScrapper()  # Initiate TableScrapper
     scrapped_data = scrapper.scrap_the_table()
-    with open('scrap_table_trial.csv', 'w') as csv_file:
-        writer = csv.writer(csv_file)
+
+    # Extract column names from the inner dictionaries
+    column_names = set()
+    for value in scrapped_data.values():
+        column_names.update(value.keys())
+
+    # Write to CSV
+    with open('scrapped_properties.csv', 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=[''] + list(column_names))
+        writer.writeheader()
         for key, value in scrapped_data.items():
-            writer.writerow([key, value])
+            row = {'': key}
+            row.update(value)
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
