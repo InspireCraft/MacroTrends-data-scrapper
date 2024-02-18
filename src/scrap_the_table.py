@@ -173,6 +173,79 @@ class TableScrapper:
             company_attr_dict[ticker][param] = parameter_value
         return company_attr_dict
 
+    def _scrap_the_page(self, company_attr_dict, scrap_params):
+        """Integrate filling the company dictionary methods.
+
+        Parameters
+        ----------
+        company_attr_dict : dict
+        scrap_params : list
+        """
+        (init_num, final_num, _) = self._get_num_of_rows(
+            self.driver_manager.driver
+        )
+        num_of_companies_on_page = final_num - init_num + 1
+
+        # Scrap the tickers
+        company_attr_dict, ticker_list = self._scrap_tickers(
+            company_attr_dict,
+            num_of_companies_on_page
+        )
+
+        # For each parameter to be scrapped, fill the dictionary
+        previous_tab_name = None
+        for param in scrap_params:
+            # Click the corresponding header
+            tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
+            column_index -= 1
+
+            # Check if clicking onto a tab name is required
+            wait_time = 100
+            if previous_tab_name != tab_name:
+                WebDriverWait(self.driver_manager.driver, wait_time).until(
+                    ec.element_to_be_clickable(
+                        (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
+                    )
+                ).click()
+
+                previous_tab_name = tab_name
+
+            # Fill dictionary ticker by ticker
+            company_attr_dict = self._fill_attribute_dict(
+                company_attr_dict,
+                ticker_list,
+                num_of_companies_on_page,
+                param,
+                column_index
+            )
+
+        return company_attr_dict, final_num, num_of_companies_on_page
+
+    def _integrated_scrap_module(self, tqdm_length, max_num, final_num, scrap_params, company_attr_dict):
+        with tqdm(total=tqdm_length) as pbar:
+            while final_num != max_num:
+                # Scrap the current page
+                company_attr_dict, final_num, num_of_companies_on_page =  \
+                    self._scrap_the_page(
+                        company_attr_dict,
+                        scrap_params,
+                    )
+
+                # Update the progress bar
+                pbar.update(int(num_of_companies_on_page))
+
+                # Click on the clickable arrow on the table to progress in the pages
+                WebDriverWait(self.driver_manager.driver, 2).until(
+                    ec.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[1]/div[4]/div[2]/div/div/div/div/div[10]/div/div[4]/div"
+                        )
+                    )
+                ).click()
+
+        return company_attr_dict
+
     def scrap_the_table(self, parameters_to_be_scrapped=None):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
@@ -206,50 +279,31 @@ class TableScrapper:
         # Initialize attribute dictionary
         company_attr_dict = {}
 
-        with tqdm(total=max_num) as pbar:
-            while final_num != max_num:
-                (init_num, final_num, _) = self._get_num_of_rows(
-                    self.driver_manager.driver
-                )
-                num_of_companies_on_page = final_num - init_num + 1
+        try:
+            company_attr_dict = self._integrated_scrap_module(
+                tqdm_length=max_num,
+                max_num=max_num,
+                final_num=final_num,
+                scrap_params=scrap_params,
+                company_attr_dict=company_attr_dict
 
-                # Scrap the tickers
-                company_attr_dict, ticker_list = self._scrap_tickers(
-                    company_attr_dict,
-                    num_of_companies_on_page
-                )
+            )
+        except:
+            self.logger.info("Exception occured during scrapping")
+            # First of all save everything scrapped upto now
+            name_of_the_csv_file = "scrapped_properties_before_error"
+            self.save_to_csv(company_attr_dict, name_of_the_csv_file)
+            self.logger.info(f"All materials before exceptioin is saved to {name_of_the_csv_file}")
+            self.driver_manager = DriverManager()  # Initialize driver manager object
+            self.driver_manager.set_up_driver(
+                url="https://www.macrotrends.net/stocks/stock-screener"
+            )
 
-                # For each parameter to be scrapped, fill the dictionary
-                previous_tab_name = None
-                for param in scrap_params:
-                    # Click the corresponding header
-                    tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
-                    column_index -= 1
-
-                    # Check if clicking onto a tab name is required
-                    wait_time = 100
-                    if previous_tab_name != tab_name:
-                        WebDriverWait(self.driver_manager.driver, wait_time).until(
-                            ec.element_to_be_clickable(
-                                (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
-                            )
-                        ).click()
-
-                        previous_tab_name = tab_name
-
-                    # Fill dictionary ticker by ticker
-                    company_attr_dict = self._fill_attribute_dict(
-                        company_attr_dict,
-                        ticker_list,
-                        num_of_companies_on_page,
-                        param,
-                        column_index
-                    )
-
-                # Update the progress bar
-                pbar.update(int(num_of_companies_on_page))
-
-                # Click on the clickable arrow on the table to progress in the pages
+            # Arrive at the page where scrapping stopped
+            self.logger.info("COMING TO THE PAGE WHERE WE LEFT")
+            num_of_companies_scrapped = len(list(company_attr_dict.keys()))
+            num_of_pages_scrapped = num_of_companies_scrapped // 20
+            for _ in range(num_of_pages_scrapped-1):
                 WebDriverWait(self.driver_manager.driver, 2).until(
                     ec.element_to_be_clickable(
                         (
@@ -258,6 +312,19 @@ class TableScrapper:
                         )
                     )
                 ).click()
+
+            self.logger.info("SCRAPPING RE-STARTED WHERE IT LEFT")
+            # Continue scrapping where it is left
+            (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
+            self.logger.info(f"IT STARTED FROM {init_num} -> {final_num}")
+            company_attr_dict = self._integrated_scrap_module(
+                tqdm_length=int(max_num-num_of_companies_scrapped),
+                max_num=max_num,
+                final_num=final_num,
+                scrap_params=scrap_params,
+                company_attr_dict=company_attr_dict
+
+            )
 
         self.logger.info("SCRAPPING IS DONE!!!")
         self.logger.info(f"SCRAPPED DATA: {scrap_params} ")
