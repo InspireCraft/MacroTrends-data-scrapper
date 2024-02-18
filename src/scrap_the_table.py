@@ -115,6 +115,64 @@ class TableScrapper:
         """Shut down the driver."""
         self.driver_manager.kill_driver()
 
+    def _scrap_tickers(self, company_attr_dict, num_of_companies_on_page):
+        """Scrap the tickers of the companies on the page.
+
+        Parameters
+        ----------
+        company_attr_dict :  dict
+            dictionary that holds the attribbutes per ticker
+
+        num_of_companies_on_page :  int
+            integer that states the number of companies at the current page
+        """
+        ticker_list = []
+        # Pre-set the company tickers
+        for row_index in range(num_of_companies_on_page):
+            # Get company tickers
+            company_ticker = (
+                self.driver_manager.driver.find_elements(
+                    By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
+                    0].text)
+            company_attr_dict[company_ticker] = {}
+
+            # Get company names
+            company_name = self.driver_manager.driver.find_elements(
+                By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
+                          f"div[1]/div/div/a")[0].text
+            company_attr_dict[company_ticker]['name'] = company_name
+
+            # Store by-for-loop company tickers
+            ticker_list.append(company_ticker)
+        return company_attr_dict, ticker_list
+
+    def _fill_attribute_dict(
+            self,
+            company_attr_dict,
+            ticker_list,
+            num_of_companies_on_page,
+            param,
+            column_index
+        ):
+        """Fill the company attribute dict with the corresponding parameters.
+
+        Parameters
+        ----------
+        company_attr_dict : dict
+        ticker_list : list[str]
+        num_of_companies_on_page : int
+        column_index : int
+        """
+        for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
+            # Get parameter values
+            parameter_value = self.driver_manager.driver.find_elements(
+                By.XPATH,
+                f"//*[@id='row{row_index}jqxGrid']/"
+                f"div[{int(3 + column_index)}]/div"
+            )[0].text
+            company_attr_dict[ticker][param] = parameter_value
+        return company_attr_dict
+
     def scrap_the_table(self, parameters_to_be_scrapped=None):
         """Scrap the whole table including all tabs and pages in macro-trend.
 
@@ -155,24 +213,11 @@ class TableScrapper:
                 )
                 num_of_companies_on_page = final_num - init_num + 1
 
-                ticker_list = []
-                # Pre-set the company tickers
-                for row_index in range(num_of_companies_on_page):
-                    # Get company tickers
-                    company_ticker = (
-                        self.driver_manager.driver.find_elements(
-                            By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
-                            0].text)
-                    company_attr_dict[company_ticker] = {}
-
-                    # Get company names
-                    company_name = self.driver_manager.driver.find_elements(
-                        By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
-                                  f"div[1]/div/div/a")[0].text
-                    company_attr_dict[company_ticker]['name'] = company_name
-
-                    # Store by-for-loop company tickers
-                    ticker_list.append(company_ticker)
+                # Scrap the tickers
+                company_attr_dict, ticker_list = self._scrap_tickers(
+                    company_attr_dict,
+                    num_of_companies_on_page
+                )
 
                 # For each parameter to be scrapped, fill the dictionary
                 previous_tab_name = None
@@ -182,8 +227,9 @@ class TableScrapper:
                     column_index -= 1
 
                     # Check if clicking onto a tab name is required
+                    wait_time = 100
                     if previous_tab_name != tab_name:
-                        WebDriverWait(self.driver_manager.driver, 10).until(
+                        WebDriverWait(self.driver_manager.driver, wait_time).until(
                             ec.element_to_be_clickable(
                                 (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
                             )
@@ -192,14 +238,13 @@ class TableScrapper:
                         previous_tab_name = tab_name
 
                     # Fill dictionary ticker by ticker
-                    for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
-                        # Get parameter values
-                        parameter_value = self.driver_manager.driver.find_elements(
-                            By.XPATH,
-                            f"//*[@id='row{row_index}jqxGrid']/"
-                            f"div[{int(3 + column_index)}]/div"
-                        )[0].text
-                        company_attr_dict[ticker][param] = parameter_value
+                    company_attr_dict = self._fill_attribute_dict(
+                        company_attr_dict,
+                        ticker_list,
+                        num_of_companies_on_page,
+                        param,
+                        column_index
+                    )
 
                 # Update the progress bar
                 pbar.update(int(num_of_companies_on_page))
