@@ -103,7 +103,7 @@ class TableScrapper:
             column_names.update(value.keys())
 
         # Write to CSV
-        with open(name_of_csv+'.csv', 'w', newline='') as csvfile:
+        with open(name_of_csv + ".csv", "w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=[''] + list(column_names))
             writer.writeheader()
             for key, value in scrapped_data.items():
@@ -153,7 +153,7 @@ class TableScrapper:
             num_of_companies_on_page,
             param,
             column_index
-        ):
+    ):
         """Fill the company attribute dict with the corresponding parameters.
 
         Parameters
@@ -221,7 +221,13 @@ class TableScrapper:
 
         return company_attr_dict, final_num, num_of_companies_on_page
 
-    def _integrated_scrap_module(self, tqdm_length, max_num, final_num, scrap_params, company_attr_dict):
+    def _integrated_scrap_module(self,
+                                 tqdm_length,
+                                 max_num,
+                                 final_num,
+                                 scrap_params,
+                                 company_attr_dict
+                                 ):
         with tqdm(total=tqdm_length) as pbar:
             while final_num != max_num:
                 # Scrap the current page
@@ -288,7 +294,7 @@ class TableScrapper:
                 company_attr_dict=company_attr_dict
 
             )
-        except:
+        except Exception:
             self.logger.info("Exception occurred during scrapping")
             # First of all save everything scrapped upto now
             name_of_the_csv_file = "scrapped_properties_before_error"
@@ -303,7 +309,7 @@ class TableScrapper:
             self.logger.info("Driver arrive at the page where it left before exception")
             num_of_companies_scrapped = len(list(company_attr_dict.keys()))
             num_of_pages_scrapped = num_of_companies_scrapped // 20
-            for _ in range(num_of_pages_scrapped-1):
+            for _ in range(num_of_pages_scrapped - 1):
                 WebDriverWait(self.driver_manager.driver, 2).until(
                     ec.element_to_be_clickable(
                         (
@@ -318,7 +324,7 @@ class TableScrapper:
             (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
             self.logger.info(f"FROM {init_num} -> {final_num}")
             company_attr_dict = self._integrated_scrap_module(
-                tqdm_length=int(max_num-num_of_companies_scrapped),
+                tqdm_length=int(max_num - num_of_companies_scrapped),
                 max_num=max_num,
                 final_num=final_num,
                 scrap_params=scrap_params,
