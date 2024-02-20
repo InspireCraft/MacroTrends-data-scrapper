@@ -289,18 +289,18 @@ class TableScrapper:
 
             )
         except:
-            self.logger.info("Exception occured during scrapping")
+            self.logger.info("Exception occurred during scrapping")
             # First of all save everything scrapped upto now
             name_of_the_csv_file = "scrapped_properties_before_error"
             self.save_to_csv(company_attr_dict, name_of_the_csv_file)
-            self.logger.info(f"All materials before exceptioin is saved to {name_of_the_csv_file}")
+            self.logger.info(f"All materials upto exception is saved to {name_of_the_csv_file}.csv")
             self.driver_manager = DriverManager()  # Initialize driver manager object
             self.driver_manager.set_up_driver(
                 url="https://www.macrotrends.net/stocks/stock-screener"
             )
 
             # Arrive at the page where scrapping stopped
-            self.logger.info("COMING TO THE PAGE WHERE WE LEFT")
+            self.logger.info("Driver arrive at the page where it left before exception")
             num_of_companies_scrapped = len(list(company_attr_dict.keys()))
             num_of_pages_scrapped = num_of_companies_scrapped // 20
             for _ in range(num_of_pages_scrapped-1):
@@ -313,10 +313,10 @@ class TableScrapper:
                     )
                 ).click()
 
-            self.logger.info("SCRAPPING RE-STARTED WHERE IT LEFT")
+            self.logger.info("Scraping continues where it left:")
             # Continue scrapping where it is left
             (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
-            self.logger.info(f"IT STARTED FROM {init_num} -> {final_num}")
+            self.logger.info(f"FROM {init_num} -> {final_num}")
             company_attr_dict = self._integrated_scrap_module(
                 tqdm_length=int(max_num-num_of_companies_scrapped),
                 max_num=max_num,
