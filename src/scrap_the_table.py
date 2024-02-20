@@ -323,6 +323,8 @@ class TableScrapper:
             # Continue scrapping where it is left
             (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
             self.logger.info(f"FROM {init_num} -> {final_num}")
+
+            # Continue scrapping
             company_attr_dict = self._integrated_scrap_module(
                 tqdm_length=int(max_num - num_of_companies_scrapped),
                 max_num=max_num,
