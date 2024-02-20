@@ -184,7 +184,7 @@ class TableScrapperGUI:
 
         # Position of the SelectAll button
         select_all_button_position_row = 15  # Row position
-        select_all_button_position_col = 10  # Column position
+        select_all_button_position_col = 2  # Column position
         button_dictionary["select_all"].grid(
             row=select_all_button_position_row,
             column=select_all_button_position_col
@@ -200,6 +200,7 @@ class TableScrapperGUI:
         # Start positioning the buttons
         search_params = list(button_dictionary.keys())
         search_params.remove("OK")
+        search_params.remove("select_all")
         for txt in search_params:
             button_dictionary[txt].grid(
                 row=parameter_button_position_row,
