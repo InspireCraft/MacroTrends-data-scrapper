@@ -57,21 +57,6 @@ class TableScrapperGUI:
         # Place the buttons on the GUI frame
         self._place_buttons(button_dictionary)
 
-    def _record_clicked_buttons(self, button):
-        """Record clicked buttons."""
-        text = button.cget("text")  # Get the text on the button
-        # This function is called when a button is clicked.
-        # It records the text on the clicked button.
-        # if the text on the button is already in the list, it means
-        # that it was already clicked before, so it is clicked again
-        # Therefore, this function checks if the text on the button is
-        # in the list, and if so, it removes from the list, if not, it adds
-        # to the list
-        if text in self.sunken_button_list:
-            self.sunken_button_list.remove(text)
-        else:
-            self.sunken_button_list.append(text)
-
     @staticmethod
     def _change_button_state(button: tk.Button):
         """Change button state. If sunken, raise or vice versa.
@@ -89,6 +74,41 @@ class TableScrapperGUI:
             button.config(relief="sunken", bg="GREEN")  # Change button state: raised -> sunken
         else:
             raise ValueError("BUTTON STATE IS NEITHER SUNKEN NOR RAISED, IT IS UNKNOWN")
+
+    @staticmethod
+    def _select_all(button_dict: dict):
+        """When select all is clicked, change the states of the all buttons."""
+        if button_dict["select_all"]["relief"] == "raised":
+            button_dict["select_all"].config(relief="sunken", bg="GREEN")
+            select_all_is_clicked = True
+        else:
+            button_dict["select_all"].config(relief="raised", bg="WHITE")
+            select_all_is_clicked = False
+
+        if select_all_is_clicked:
+            for key in list(button_dict.keys()):
+                if key == "OK":
+                    continue
+                else:
+                    button_dict[key].config(relief="sunken", bg="GREEN")
+        else:
+            for key in list(button_dict.keys()):
+                if key == "OK":
+                    continue
+                else:
+                    button_dict[key].config(relief="raised", bg="WHITE")
+
+    def _record_clicked_buttons(self, button_dict: dict):
+        """Record all sunken (=clicked) buttons after OK is clicked."""
+        for key in list(button_dict.keys()):
+            if key == "OK" or key == "select_all":
+                continue
+            else:
+                if button_dict[key]["relief"] == "sunken":
+                    text = button_dict[key].cget("text")
+                    self.sunken_button_list.append(text)
+        # Then close the GUI
+        self._close_window()
 
     def _close_window(self):
         """Kill GUI."""
@@ -126,7 +146,6 @@ class TableScrapperGUI:
             button_dictionary[txt].config(
                 command=lambda button=button_dictionary[txt]: [
                     self._change_button_state(button),
-                    self._record_clicked_buttons(button)
                 ]
             )
 
@@ -137,8 +156,19 @@ class TableScrapperGUI:
 
         # When OK button is clicked, direct GUI to its kill method
         button_dictionary["OK"].config(
-            command=self._close_window
+            command=lambda: self._record_clicked_buttons(button_dictionary),
         )
+
+        # Create "SELECT ALL" button
+        button_dictionary["select_all"] = tk.Button(
+            self.window, text="SELECT ALL", height=5, width=20, bg="WHITE", font="bold"
+        )
+
+        # When "SELECT ALL" button is clicked, Make all parameter buttons raised or sunken
+        button_dictionary["select_all"].config(
+            command=lambda: self._select_all(button_dictionary)
+        )
+
         return button_dictionary
 
     @staticmethod
@@ -150,6 +180,14 @@ class TableScrapperGUI:
         button_dictionary["OK"].grid(
             row=ok_button_position_row,
             column=ob_button_position_column
+        )
+
+        # Position of the SelectAll button
+        select_all_button_position_row = 15  # Row position
+        select_all_button_position_col = 10  # Column position
+        button_dictionary["select_all"].grid(
+            row=select_all_button_position_row,
+            column=select_all_button_position_col
         )
 
         # Initiate position counters for parameter button
