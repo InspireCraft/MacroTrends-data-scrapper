@@ -296,10 +296,13 @@ class TableScrapper:
             )
         except Exception:
             self.logger.info("Exception occurred during scrapping")
-            # First of all save everything scrapped upto now
+
+            # First of all save everything that is scrapped
             name_of_the_csv_file = "scrapped_properties_before_error"
             self.save_to_csv(company_attr_dict, name_of_the_csv_file)
             self.logger.info(f"All materials upto exception is saved to {name_of_the_csv_file}.csv")
+
+            # Setup a new driver
             self.driver_manager = DriverManager()  # Initialize driver manager object
             self.driver_manager.set_up_driver(
                 url="https://www.macrotrends.net/stocks/stock-screener"
@@ -320,11 +323,11 @@ class TableScrapper:
                 ).click()
 
             self.logger.info("Scraping continues where it left:")
-            # Continue scrapping where it is left
+            # Continue scrapping where it was left
             (init_num, final_num, max_num) = self._get_num_of_rows(self.driver_manager.driver)
             self.logger.info(f"FROM {init_num} -> {final_num}")
 
-            # Continue scrapping
+            # Initiate scrapping
             company_attr_dict = self._integrated_scrap_module(
                 tqdm_length=int(max_num - num_of_companies_scrapped),
                 max_num=max_num,
