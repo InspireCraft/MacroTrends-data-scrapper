@@ -1,6 +1,7 @@
 # Import libraries
 import csv
 import os
+from copy import deepcopy
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -12,6 +13,28 @@ from src.utils.Logger import Logger
 from src.utils.manage_driver import DriverManager
 from src.gui_scrap_the_table import TableScrapperGUI
 
+
+def merge_unique_with_order(list1, list2):
+    # Create a set to keep track of unique elements
+    unique_set = set()
+
+    # Create a new list to store merged unique elements in order
+    merged_list = []
+
+    # Add elements from list1 to merged_list
+    for item in list1:
+        # Add item to the merged list if it's not already present
+        if item not in unique_set:
+            merged_list.append(item)
+            unique_set.add(item)
+
+    # Add elements from list2 to merged_list if they are not already present
+    for item in list2:
+        if item not in unique_set:
+            merged_list.append(item)
+            unique_set.add(item)
+
+    return merged_list
 
 class TableScrapper:
     """
@@ -102,6 +125,34 @@ class TableScrapper:
         path : str
             path of the CSV file where it is intended to be saved
         """
+        ########################################################################################
+        def overwrite_specific_row(csv_file, row_index, new_data, new_field_names):
+            temp_file = csv_file + ".temp"
+            # Write modified rows to temporary file
+            with open(csv_file, 'r', newline='') as infile, open(temp_file, 'w', newline='') as outfile:
+                reader = csv.reader(infile)
+                writer = csv.DictWriter(outfile, fieldnames=new_field_names)
+                writer.writeheader()
+                for i, row in enumerate(reader):
+                    print(f"i = {i}, row = {row}")
+                    if i == 0:
+                        existing_column_names = deepcopy(row)
+                        continue
+                    row_dict = {key: val for key, val in zip(existing_column_names, row)}
+                    if i == row_index+1:
+                        print(f"i = {i}")
+                        print(row_dict)
+                        print(new_data)
+                        row_dict.update(new_data)  # update row
+                    writer.writerow(row_dict)
+
+            # Replace original file with temporary file
+            import os
+            os.replace(temp_file, csv_file)
+
+        #############################################################################################
+
+
         # Extract column names from the inner dictionaries
         column_names = set()
         for value in scrapped_data.values():
@@ -120,17 +171,45 @@ class TableScrapper:
         ticker_column = "Ticker"
         column_names.insert(0, ticker_column)
         if not os.path.exists(csv_file_name):
+            existing_headers = []
+            existing_tickers = []
             with open(csv_file_name, "w", newline="") as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=column_names)
                 writer.writeheader()
+        else:
+            with open(csv_file_name, "r") as csvfile:
+                reader = csv.reader(csvfile)
+                existing_headers = next(reader)  # read first row
+                existing_tickers = []
+                for row in reader:
+                    existing_tickers.append(row[0])
+
+        existing_tick_dict = {key:value for key,value in scrapped_data.items() if key in existing_tickers}
+        nonexisting_tick_dict = {key:value for key,value in scrapped_data.items() if key not in existing_tickers}
+        print(f"exis: {len(list(existing_tick_dict.keys()))}, non: {len(list(nonexisting_tick_dict.keys()))}")
+
+        # for key in list(scrapped_data.keys()):
+        #     if key in existing_headers:
+        #         existing_tick_dict[key] = []
+        #     else:
+        #         nonexisting_tick_dict[key] = []
+        #
+
+        new_field_names = merge_unique_with_order(existing_headers, column_names)
+        ### UPDATE EXISTING TICKER ###
+        for ticker,value in existing_tick_dict.items():
+            row_index = existing_tickers.index(ticker)
+            overwrite_specific_row(csv_file_name, row_index, value, new_field_names)
+
 
         with open(csv_file_name, "a", newline="") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=column_names)
+
+            writer = csv.DictWriter(csvfile, fieldnames=new_field_names)
 
             if csvfile.tell() == 0:
                 writer.writeheader()
 
-            for key, value in scrapped_data.items():
+            for key, value in nonexisting_tick_dict.items():
                 row = {ticker_column: key}
                 row.update(value)
                 writer.writerow(row)
