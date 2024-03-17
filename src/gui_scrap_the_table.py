@@ -52,10 +52,13 @@ class TableScrapperGUI:
         search_params = [element for element in MAP_OF_HEADERS.keys()]
 
         # Create buttons for the GUI
-        button_dictionary = self._create_buttons(search_params)
+        button_dictionary, confirm_button, select_all_button = self._create_buttons(search_params)
 
         # Place the buttons on the GUI frame
-        self._place_buttons(button_dictionary)
+        self._place_buttons(button_dictionary,
+                            confirm_button=confirm_button,
+                            select_all_button=select_all_button
+                        )
 
     @staticmethod
     def _change_button_state(button: tk.Button):
@@ -76,37 +79,28 @@ class TableScrapperGUI:
             raise ValueError("BUTTON STATE IS NEITHER SUNKEN NOR RAISED, IT IS UNKNOWN")
 
     @staticmethod
-    def _select_all(button_dict: dict):
+    def _select_all(button_dict: dict, select_all_button: tk.Button):
         """When select all is clicked, change the states of the all buttons."""
-        if button_dict["select_all"]["relief"] == "raised":
-            button_dict["select_all"].config(relief="sunken", bg="GREEN")
+        if select_all_button["relief"] == "raised":
+            select_all_button.config(relief="sunken", bg="GREEN")
             select_all_is_clicked = True
         else:
-            button_dict["select_all"].config(relief="raised", bg="WHITE")
+            select_all_button.config(relief="raised", bg="WHITE")
             select_all_is_clicked = False
 
         if select_all_is_clicked:
             for key in list(button_dict.keys()):
-                if key == "OK":
-                    continue
-                else:
-                    button_dict[key].config(relief="sunken", bg="GREEN")
+                button_dict[key].config(relief="sunken", bg="GREEN")
         else:
             for key in list(button_dict.keys()):
-                if key == "OK":
-                    continue
-                else:
-                    button_dict[key].config(relief="raised", bg="WHITE")
+                button_dict[key].config(relief="raised", bg="WHITE")
 
     def _record_clicked_buttons(self, button_dict: dict):
         """Record all sunken (=clicked) buttons after OK is clicked."""
         for key in list(button_dict.keys()):
-            if key == "OK" or key == "select_all":
-                continue
-            else:
-                if button_dict[key]["relief"] == "sunken":
-                    text = button_dict[key].cget("text")
-                    self.sunken_button_list.append(text)
+            if button_dict[key]["relief"] == "sunken":
+                text = button_dict[key].cget("text")
+                self.sunken_button_list.append(text)
         # Then close the GUI
         self._close_window()
 
@@ -149,35 +143,35 @@ class TableScrapperGUI:
                 ]
             )
 
-        # Create "OK" button
-        button_dictionary["OK"] = tk.Button(
-            self.window, text="OK", height=5, width=20, bg="RED", font="bold"
+        # Create "Confirm" button
+        confirm_button = tk.Button(
+            self.window, text="Confirm", height=5, width=20, bg="RED", font="bold"
         )
 
         # When OK button is clicked, direct GUI to its kill method
-        button_dictionary["OK"].config(
+        confirm_button.config(
             command=lambda: self._record_clicked_buttons(button_dictionary),
         )
 
         # Create "SELECT ALL" button
-        button_dictionary["select_all"] = tk.Button(
+        select_all_button = tk.Button(
             self.window, text="SELECT ALL", height=5, width=20, bg="WHITE", font="bold"
         )
 
         # When "SELECT ALL" button is clicked, Make all parameter buttons raised or sunken
-        button_dictionary["select_all"].config(
-            command=lambda: self._select_all(button_dictionary)
+        select_all_button.config(
+            command=lambda: self._select_all(button_dictionary, select_all_button)
         )
 
-        return button_dictionary
+        return button_dictionary, confirm_button, select_all_button
 
     @staticmethod
-    def _place_buttons(button_dictionary):
+    def _place_buttons(button_dictionary, confirm_button, select_all_button):
         """Place clickable buttons on the GUI."""
         # Position of the OK button
         ok_button_position_row = 15  # Row position
         ob_button_position_column = 3  # Column position
-        button_dictionary["OK"].grid(
+        confirm_button.grid(
             row=ok_button_position_row,
             column=ob_button_position_column
         )
@@ -185,7 +179,7 @@ class TableScrapperGUI:
         # Position of the SelectAll button
         select_all_button_position_row = 15  # Row position
         select_all_button_position_col = 2  # Column position
-        button_dictionary["select_all"].grid(
+        select_all_button.grid(
             row=select_all_button_position_row,
             column=select_all_button_position_col
         )
@@ -199,8 +193,6 @@ class TableScrapperGUI:
 
         # Start positioning the buttons
         search_params = list(button_dictionary.keys())
-        search_params.remove("OK")
-        search_params.remove("select_all")
         for txt in search_params:
             button_dictionary[txt].grid(
                 row=parameter_button_position_row,
