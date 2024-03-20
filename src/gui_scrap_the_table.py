@@ -58,7 +58,7 @@ class TableScrapperGUI:
         self._place_buttons(button_dictionary,
                             confirm_button=confirm_button,
                             select_all_button=select_all_button
-                        )
+                            )
 
     @staticmethod
     def _change_button_state(button: tk.Button):
