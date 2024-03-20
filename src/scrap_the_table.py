@@ -90,7 +90,7 @@ class TableScrapper:
         self.driver_manager.kill_driver()
 
     def _scrap_ticker_and_company_names(self):
-        """Scrap the tickers of the companies on the page."""
+        """Scrap the tickers and the names of the companies on the page."""
         (init_num, final_num, _) = self._get_num_of_rows(
             self.driver_manager.driver
         )
@@ -117,18 +117,23 @@ class TableScrapper:
 
     def _fill_attribute_dict(
             self,
-            ticker_list,
-            param,
-            column_index
+            ticker_list: list[str],
+            param: str,
+            column_index: int
     ):
         """Fill the company attribute dict with the corresponding parameters.
 
         Parameters
         ----------
-        company_attr_dict_temp : dict
         ticker_list : list[str]
-        num_of_companies_on_page : int
+        param : str
         column_index : int
+
+        Returns
+        -------
+        one_parameter_dict_per_page : dict(dict)
+            dictionary of dictionaries that holds the scrapped parameter value
+            per company ticker per page
         """
         (init_num, final_num, _) = self._get_num_of_rows(
             self.driver_manager.driver
@@ -145,12 +150,13 @@ class TableScrapper:
             one_parameter_dict_per_page[ticker][param] = parameter_value
         return one_parameter_dict_per_page
 
-    def _scrap_the_page(self, scrap_params):
-        """Integrate filling the company dictionary methods.
+    def _scrap_the_page(self, scrap_params: list[str]):
+        """Scrap the current page where table scrapper is operating.
 
         Parameters
         ----------
-        scrap_params : list
+        scrap_params : list[str]
+            list of the parameters that are desired to be scrapped
         """
         # Scrap the tickers
         ticker_list, name_list = self._scrap_ticker_and_company_names()
@@ -181,6 +187,21 @@ class TableScrapper:
         return company_attr_dict_page
 
     def _change_tab(self, current_tab_name: str, tab_name: str):
+        """Change the tab.
+
+        Parameters
+        ----------
+        current_tab_name : str
+            name of the current tab tablescrapper is operating
+        tab_name : str
+            name of the tab tablescrapper needs to acces for next parameter
+
+        Returns
+        -------
+        tab_name : str
+            name of the current tab where table scrapper is operating
+
+        """
         wait_time = 100
         if current_tab_name != tab_name:
             WebDriverWait(self.driver_manager.driver, wait_time).until(
@@ -257,6 +278,7 @@ class TableScrapper:
         self.logger.info(f"SCRAPPED DATA: {scrap_params} ")
 
     def _progress_one_page(self):
+        """Move one page forward."""
         WebDriverWait(self.driver_manager.driver, 2).until(
             ec.element_to_be_clickable(
                 (
@@ -268,13 +290,7 @@ class TableScrapper:
 
 
 def main():
-    """Run the TableScrapper.
-
-    Returns
-    -------
-    scrapped_data : dict
-        Dictionary of the table in the given url
-    """
+    """Run the TableScrapper."""
     scrapper = TableScrapper()  # Initiate TableScrapper
     scrapper.scrap_the_table(csv_file="Output.csv", ticker_column_str="Ticker")
 
