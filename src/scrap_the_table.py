@@ -202,6 +202,12 @@ class TableScrapper:
         ----------
         parameters_to_be_scrapped : list[str]
             user inputted list of parameters to be scrapper
+        
+        csv_file : str
+            name of the file of data to be recorded.
+
+        ticker_column_str: str
+            name of the Ticker column
 
         Returns
         -------
