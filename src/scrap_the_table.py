@@ -44,173 +44,9 @@ class TableScrapper:
         self.logger = Logger(self.__class__.__name__, str_logger)
         self.company_attr_dict = {}
 
-    @staticmethod
-    def _sort_search_parameters(params_to_be_searched):
-        """Sort tab_names for min amount of click interaction.
-
-        Parameters
-        ----------
-        params_to_be_searched : list[str]
-            list of parameters
-
-        Returns
-        -------
-        Sorted list of parameters to be scrapped
-        """
-        tab_name_list = [
-            list(MAP_OF_HEADERS[element].keys())[0] for element in params_to_be_searched
-        ]
-        # Re-order parameters for efficient search (this allows less click interaction)
-        # Below line of code re-order parameter list such a way that the parameters
-        # sharing the same tab_name grouped together
-        # sorted(zip(param1,param2)) sorts according to param1
-        return [p for _, p in sorted(zip(tab_name_list, params_to_be_searched))]
-
-    @staticmethod
-    def _get_num_of_rows(driver) -> "tuple[int,int,int]":
-        """Check current row number, max row number in current page, total row number.
-
-        Parameters
-        ----------
-        driver : WebDriver object
-
-        Returns
-        -------
-        current_initial_number, current_final_number, number_of_rows_in_the_list : tuple of ints
-
-        """
-        temp = driver.find_elements(By.XPATH, "// *[ @ id = 'pagerjqxGrid'] / div / div[6]")
-        current_initial_number = int(temp[0].text.split("-")[0])
-        current_final_number = int(temp[0].text.split("-")[1].split(" ")[0])
-        number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
-        return current_initial_number, current_final_number, number_of_rows_in_the_list
-
     def __del__(self):
         """Shut down the driver."""
         self.driver_manager.kill_driver()
-
-    def _scrap_ticker_and_company_names(self):
-        """Scrap the tickers and the names of the companies on the page."""
-        (init_num, final_num, _) = self._get_num_of_rows(
-            self.driver_manager.driver
-        )
-        num_of_companies_on_page = final_num - init_num + 1
-
-        ticker_list = []
-        name_list = []
-        for row_index in range(num_of_companies_on_page):
-            # Get company tickers
-            company_ticker = (
-                self.driver_manager.driver.find_elements(
-                    By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
-                    0].text)
-            ticker_list.append(company_ticker)
-
-            # Get company names
-            company_name = self.driver_manager.driver.find_elements(
-                By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
-                          f"div[1]/div/div/a")[0].text
-            name_list.append(company_name)
-
-        # ticker_list, name_list = company_dict_temp.items()
-        return ticker_list, name_list
-
-    def _fill_attribute_dict(
-            self,
-            ticker_list: list[str],
-            param: str,
-            column_index: int
-    ):
-        """Fill the company attribute dict with the corresponding parameters.
-
-        Parameters
-        ----------
-        ticker_list : list[str]
-        param : str
-        column_index : int
-
-        Returns
-        -------
-        one_parameter_dict_per_page : dict(dict)
-            dictionary of dictionaries that holds the scrapped parameter value
-            per company ticker per page
-        """
-        (init_num, final_num, _) = self._get_num_of_rows(
-            self.driver_manager.driver
-        )
-        one_parameter_dict_per_page = {ticker: dict() for ticker in ticker_list}
-        num_of_companies_on_page = final_num - init_num + 1
-        for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
-            # Get parameter values
-            parameter_value = self.driver_manager.driver.find_elements(
-                By.XPATH,
-                f"//*[@id='row{row_index}jqxGrid']/"
-                f"div[{int(3 + column_index)}]/div"
-            )[0].text
-            one_parameter_dict_per_page[ticker][param] = parameter_value
-        return one_parameter_dict_per_page
-
-    def _scrap_the_page(self, scrap_params: list[str]):
-        """Scrap the current page where table scrapper is operating.
-
-        Parameters
-        ----------
-        scrap_params : list[str]
-            list of the parameters that are desired to be scrapped
-        """
-        # Scrap the tickers
-        ticker_list, name_list = self._scrap_ticker_and_company_names()
-        company_attr_dict_page = {
-            ticker: {"name": name} for ticker, name in zip(ticker_list, name_list)
-        }
-
-        # For each parameter to be scrapped, fill the dictionary
-        previous_tab_name = None
-        for param in scrap_params:
-            # Click the corresponding header
-            tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
-            column_index -= 1
-
-            # Check if clicking onto a tab name is required
-            previous_tab_name = self._change_tab(previous_tab_name, tab_name)
-
-            # Fill dictionary ticker by ticker
-            one_parameter_dict_per_page = self._fill_attribute_dict(
-                ticker_list,
-                param,
-                column_index
-            )
-
-            for key in list(one_parameter_dict_per_page.keys()):
-                company_attr_dict_page[key].update(one_parameter_dict_per_page[key])
-
-        return company_attr_dict_page
-
-    def _change_tab(self, current_tab_name: str, tab_name: str):
-        """Change the tab.
-
-        Parameters
-        ----------
-        current_tab_name : str
-            name of the current tab tablescrapper is operating
-        tab_name : str
-            name of the tab tablescrapper needs to acces for next parameter
-
-        Returns
-        -------
-        tab_name : str
-            name of the current tab where table scrapper is operating
-
-        """
-        wait_time = 100
-        if current_tab_name != tab_name:
-            WebDriverWait(self.driver_manager.driver, wait_time).until(
-                ec.element_to_be_clickable(
-                    (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
-                )
-            ).click()
-
-        return tab_name
 
     def scrap_the_table(
         self, parameters_to_be_scrapped=None,
@@ -274,6 +110,170 @@ class TableScrapper:
 
         self.logger.info("SCRAPPING IS DONE!!!")
         self.logger.info(f"SCRAPPED DATA: {scrap_params} ")
+
+    def _scrap_the_page(self, scrap_params: list[str]):
+        """Scrap the current page where table scrapper is operating.
+
+        Parameters
+        ----------
+        scrap_params : list[str]
+            list of the parameters that are desired to be scrapped
+        """
+        # Scrap the tickers
+        ticker_list, name_list = self._scrap_ticker_and_company_names()
+        company_attr_dict_page = {
+            ticker: {"name": name} for ticker, name in zip(ticker_list, name_list)
+        }
+
+        # For each parameter to be scrapped, fill the dictionary
+        previous_tab_name = None
+        for param in scrap_params:
+            # Click the corresponding header
+            tab_name, column_index = list(MAP_OF_HEADERS[param].items())[0]
+            column_index -= 1
+
+            # Check if clicking onto a tab name is required
+            previous_tab_name = self._change_tab(previous_tab_name, tab_name)
+
+            # Fill dictionary ticker by ticker
+            one_parameter_dict_per_page = self._fill_attribute_dict(
+                ticker_list,
+                param,
+                column_index
+            )
+
+            for key in list(one_parameter_dict_per_page.keys()):
+                company_attr_dict_page[key].update(one_parameter_dict_per_page[key])
+
+        return company_attr_dict_page
+
+    def _scrap_ticker_and_company_names(self):
+        """Scrap the tickers and the names of the companies on the page."""
+        (init_num, final_num, _) = self._get_num_of_rows(
+            self.driver_manager.driver
+        )
+        num_of_companies_on_page = final_num - init_num + 1
+
+        ticker_list = []
+        name_list = []
+        for row_index in range(num_of_companies_on_page):
+            # Get company tickers
+            company_ticker = (
+                self.driver_manager.driver.find_elements(
+                    By.XPATH, f"// *[ @ id = 'row{row_index}jqxGrid'] / div[2] / div")[
+                    0].text)
+            ticker_list.append(company_ticker)
+
+            # Get company names
+            company_name = self.driver_manager.driver.find_elements(
+                By.XPATH, f"//*[@id='row{row_index}jqxGrid']/"
+                          f"div[1]/div/div/a")[0].text
+            name_list.append(company_name)
+
+        # ticker_list, name_list = company_dict_temp.items()
+        return ticker_list, name_list
+
+    def _fill_attribute_dict(
+            self,
+            ticker_list: list[str],
+            param: str,
+            column_index: int
+    ):
+        """Fill the company attribute dict with the corresponding parameters.
+
+        Parameters
+        ----------
+        ticker_list : list[str]
+        param : str
+        column_index : int
+
+        Returns
+        -------
+        one_parameter_dict_per_page : dict(dict)
+            dictionary of dictionaries that holds the scrapped parameter value
+            per company ticker per page
+        """
+        (init_num, final_num, _) = self._get_num_of_rows(
+            self.driver_manager.driver
+        )
+        one_parameter_dict_per_page = {ticker: dict() for ticker in ticker_list}
+        num_of_companies_on_page = final_num - init_num + 1
+        for ticker, row_index in zip(ticker_list, range(num_of_companies_on_page)):
+            # Get parameter values
+            parameter_value = self.driver_manager.driver.find_elements(
+                By.XPATH,
+                f"//*[@id='row{row_index}jqxGrid']/"
+                f"div[{int(3 + column_index)}]/div"
+            )[0].text
+            one_parameter_dict_per_page[ticker][param] = parameter_value
+        return one_parameter_dict_per_page
+
+    @staticmethod
+    def _sort_search_parameters(params_to_be_searched):
+        """Sort tab_names for min amount of click interaction.
+
+        Parameters
+        ----------
+        params_to_be_searched : list[str]
+            list of parameters
+
+        Returns
+        -------
+        Sorted list of parameters to be scrapped
+        """
+        tab_name_list = [
+            list(MAP_OF_HEADERS[element].keys())[0] for element in params_to_be_searched
+        ]
+        # Re-order parameters for efficient search (this allows less click interaction)
+        # Below line of code re-order parameter list such a way that the parameters
+        # sharing the same tab_name grouped together
+        # sorted(zip(param1,param2)) sorts according to param1
+        return [p for _, p in sorted(zip(tab_name_list, params_to_be_searched))]
+
+    @staticmethod
+    def _get_num_of_rows(driver) -> "tuple[int,int,int]":
+        """Check current row number, max row number in current page, total row number.
+
+        Parameters
+        ----------
+        driver : WebDriver object
+
+        Returns
+        -------
+        current_initial_number, current_final_number, number_of_rows_in_the_list : tuple of ints
+
+        """
+        temp = driver.find_elements(By.XPATH, "// *[ @ id = 'pagerjqxGrid'] / div / div[6]")
+        current_initial_number = int(temp[0].text.split("-")[0])
+        current_final_number = int(temp[0].text.split("-")[1].split(" ")[0])
+        number_of_rows_in_the_list = int(temp[0].text.split("-")[1].split(" ")[2])
+        return current_initial_number, current_final_number, number_of_rows_in_the_list
+
+    def _change_tab(self, current_tab_name: str, tab_name: str):
+        """Change the tab.
+
+        Parameters
+        ----------
+        current_tab_name : str
+            name of the current tab tablescrapper is operating
+        tab_name : str
+            name of the tab tablescrapper needs to acces for next parameter
+
+        Returns
+        -------
+        tab_name : str
+            name of the current tab where table scrapper is operating
+
+        """
+        wait_time = 100
+        if current_tab_name != tab_name:
+            WebDriverWait(self.driver_manager.driver, wait_time).until(
+                ec.element_to_be_clickable(
+                    (By.XPATH, f"//*[@id='columns_{tab_name}']/a")
+                )
+            ).click()
+
+        return tab_name
 
     def _progress_one_page(self):
         """Move one page forward."""
