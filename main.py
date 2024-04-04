@@ -58,5 +58,5 @@ def _create_absolute_file_path(path_relative):
 
 
 if __name__ == "__main__":
-    
+
     main()
