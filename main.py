@@ -24,7 +24,7 @@ def main():
         '--logging-level',
         dest='logger_level',
         metavar='LOGGING_LEVEL_STRING',
-        help='Logging level of the game, one of ["none", "info", "debug"]',
+        help='Logging level of the datascrapper, one of ["none", "info", "debug"]',
         default="none",
         choices=["none", "info", "debug"],
     )
@@ -58,5 +58,5 @@ def _create_absolute_file_path(path_relative):
 
 
 if __name__ == "__main__":
-
+    
     main()
