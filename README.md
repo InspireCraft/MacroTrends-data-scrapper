@@ -10,9 +10,16 @@ An example of the table is given in the Figure below:
 ![alt text](readme_images/tableExplainer.png)
 
 
-This packages enable users to scrap all (or some) of the data record into a
-`nested dict` where main keys are "Ticker" attributes of the companies. Then 
-save the recorded data into a `.csv` file. This package simply be used by
+This packages enable users to scrap all (or some) of the data. Then 
+save the recorded data into a `.csv` file. The first column of
+the `.csv` file is the "Ticker" of the companies, and the second
+column is the "Company Names". The other columns change according to the
+scrapped parameter(s). An example of an `.csv` file is seen below:
+
+![alt text](readme_images/excel.PNG)
+
+
+This package simply be used by
 calling `main.py` via command line. It will automatically open a GUI 
 which enables users to select which parameters to be scrapped. 
 Below, the GUI (which enables users to select
@@ -82,7 +89,7 @@ its path via command line. Please note that, the format of the .JSON file should
 be as given below:
 
 ```json
-["param1", "param2", ..., "paramN"]
+["param1", "param2", "...", "paramN"]
 ```
 
 `--output-csv
