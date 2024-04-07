@@ -1,6 +1,6 @@
 # MacroTrend Data Scrapper
 
-Package to be used to scrap the desired data in the Table given in MacroTrend website accessed with the url below: <br />
+Package to be used to scrap the desired data in the table given in MacroTrend website accessed with the url below: <br />
 https://www.macrotrends.net/stocks/stock-screener
 <br />
 When the url above is clicked a table which is full of companies 
