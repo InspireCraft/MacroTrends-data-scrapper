@@ -11,7 +11,7 @@ An example of the table is given in the Figure below:
 
 
 This packages enable users to scrap all (or some) of the data 
-and save it into a ".csv" file. This package simply be used by
+and save it into a `.csv` file. This package simply be used by
 calling main.py via command line. It will automatically open a GUI 
 which enables users to select which parameters to be scrapped. 
 Below, the GUI (which enables users to select
