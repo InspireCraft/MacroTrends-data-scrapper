@@ -1,4 +1,4 @@
-# MacroTrend Data Scrapper
+# MacroTrend data scrapper
 
 Package to be used to scrap the desired data in the table given in MacroTrend website accessed with the url below: <br />
 https://www.macrotrends.net/stocks/stock-screener
@@ -27,46 +27,49 @@ More details on the usage of the package is explained in the followings.
 
 - Python 3.x is installed to your system
 
-### Installation Steps
+### Installation steps
 
 1. Clone this repository to your local machine
 
-` git clone git@github.com:AlpSari/MagicInvest.git 
- `
+```bash 
+git clone git@github.com:AlpSari/MagicInvest.git 
+```
 2. Go to the directory
 
-`cd MagicInvest
-`
+```bash
+cd MagicInvest
+```
+
 3. (Optional) Create a Python virtual environment and activate it:
 
-`python -m venv venv
-`
+```bash
+python -m venv .venv/ 
+```
 
 From Windows command prompt (i.e., cmd), activate the virtual environment by:
 
-`venv\Scripts\activate
-`
+```bash
+.venv/Scripts/activate
+```
 
 4. Install the required dependencies using pip:
 
-`pip install -r requirements.txt
-`
+```bash
+pip install -r requirements.txt
+```
 
-5. (Optional) Install developer tools if you would like to contribute to the project:
 
-`pip install -r dev_requirements.txt
-`
-
-### Running the Data Scrapper
+### Running the data scrapper
 
 To run the data scrapper the below line can be executed in the command line:
 
-`python main.py
-`
+```
+python main.py
+```
 
-When the `main` executed in this way, it runs with its default settings. With the default settings, the parameters desired to be scrapped is selected by the user via a GUI, then all scrappings is saved to "output.csv" in the current directory.  
+When the `main.py` executed in this way, it runs with its default settings. With the default settings, the parameters desired to be scrapped is selected by the user via a GUI, then all scrappings is saved to "output.csv" in the current directory.  
 
-However, this is not the only way to execute `main`. It can also be executed by providing arguments which are explained below:
+However, this is not the only way to execute `main.py`. It can also be executed by providing arguments which are explained below:
 
 `--parameters-path
 `
@@ -80,8 +83,6 @@ be as given below:
 ```json
 ["param1", "param2", ..., "paramN"]
 ```
-
-
 
 `--output-csv
 `
@@ -103,13 +104,6 @@ Developers should use the same code checking tools that are being used by the Gi
 ```bash
 pip install -r dev_requirements.txt
 ```
-
-## Git Branch Naming Convention
-
-1. No commit to master
-2. FEATURES: feature/...
-3. BUGFIX: bugfix/...
-4. SANDBOX: sandbox/...
 
 ## Testing
 
