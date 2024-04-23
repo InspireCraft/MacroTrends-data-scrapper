@@ -44,58 +44,55 @@ set to `Ticker` and `name`, respectively.
    ```
 
 4. Install the required dependencies using pip:
-   
+
    ```bash
    pip install -r requirements.txt
    ```
-
 
 ### Running the data scrapper
 
 To run the data scrapper:
 
 ```bash
-python main.py
+python main.py [arguments]
 ```
+
+Running `main.py` without any arguments will open the GUI below for user to
+select which parameters are to be scrapped and the scrapped data will be stored
+in `Output.csv` in the current working directory. Run `python main.py -h` for
+the list of the available arguments. The arguments are also explained below.
+
+![alt text](readme_images/parameterGUI.PNG)
 
 #### Arguments of main.py
 
-- `
---parameters-path
-`
- :Input of this argument is the path to the JSON file 
-which stores the parameters to be scrapped. 
-User can avoid using the GUI by creating a JSON file 
-(storing parameters to be scrapped) and providing 
-its path via command line. 
+- ` --parameters-path `: Path to the `JSON` file which stores the parameters to
+be scrapped. User can avoid using the GUI by creating a `JSON` file (storing
+parameters to be scrapped) and providing its path via this argument.
 
-   Format of the JSON file:
+   Format of the `JSON` file:
 
    ```json
    ["param1", "param2", "...", "paramN"]
    ```
 
-- `
---output-csv
-`
- :Input of this argument is the name of the csv file in which
-scrapped parameters to be saved. Default name of csv = `output.csv`
+- ` --output-csv `: Name of the `CSV` file to which scrapped parameters are
+  saved. Default is `Output.csv`.
 
-- `
---logging-level
-`
-:Input of this argument controls the logging level of Logger object. 
-The valid arguments are ["none", "info", "debug"]. Default level = `none`
-
+- ` --logging-level `: Controls the logging level. The valid arguments are
+  `["none", "info", "debug"]`. Default is set to `none`.
 
 Example usage with the arguments:
 
 ```bash
 python main.py --parameters-path this/is/my/path.JSON --output-csv my_file.csv --logging-level none
 ```
+
 ## Note To Developers
 
-Developers should use the same code checking tools that are being used by the GitHub actions. Those are automatically configured using configuration files in the repository and all the tools and plugins can be downloaded using:
+Developers should use the same code checking tools with the same settings that
+are configured in the root directory. All the tools and plugins for development
+can be downloaded using:
 
 ```bash
 pip install -r dev_requirements.txt
@@ -109,4 +106,4 @@ Unit tests for the package are available in the `tests/` directory. To run the t
 python -m unittest discover -v tests
 ```
 
-Note that some of the GUI-related tests are causing display errors(in remote server); therefore, they are not implemented yet.
+Note that some of the GUI-related tests are causing display errors (in the remote server); therefore, those are not implemented yet.
