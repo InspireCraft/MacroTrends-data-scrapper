@@ -1,33 +1,26 @@
 # MacroTrend data scrapper
 
-Package to be used to scrap the desired data in the table given in MacroTrend website accessed with the url below: <br />
-https://www.macrotrends.net/stocks/stock-screener
-<br />
-When the url above is clicked a table which is full of companies 
-and their attributes (such as dividend yield, market cap etc.) is seen.
-An example of the table is given in the Figure below:
+Package to be used to scrap the desired data in the table given in 
+[MacroTrend](https://www.macrotrends.net/stocks/stock-screener) 
+
 
 ![alt text](readme_images/tableExplainer.png)
 
 
-This packages enable users to scrap all (or some) of the data. Then 
-save the recorded data into a `.csv` file. The first column of
-the `.csv` file is the "Ticker" of the companies, and the second
-column is the "Company Names". The other columns change according to the
-scrapped parameter(s). An example of an `.csv` file is seen below:
+This packages enable users to scrap all (or some) of the data. 
+Then save the recorded data into a `.csv`.
 
 ![alt text](readme_images/excel.PNG)
 
+First column and the second column of the `.csv` are always
+set to "Ticker" and "name" respectively.
 
-This package simply be used by
-calling `main.py` via command line. It will automatically open a GUI 
-which enables users to select which parameters to be scrapped. 
-Below, the GUI (which enables users to select
-parameters) is seen.
+
+When `main.py` is executed, a GUI appears  to select which parameters 
+to be scrapped. 
+
 ![alt text](readme_images/parameterGUI.PNG)
 
-
-More details on the usage of the package is explained in the followings.
 
 ## Installation
 
@@ -39,75 +32,80 @@ More details on the usage of the package is explained in the followings.
 
 1. Clone this repository to your local machine
 
-```bash 
-git clone git@github.com:AlpSari/MagicInvest.git 
-```
+   ```bash 
+   git clone git@github.com:AlpSari/MagicInvest.git 
+   ```
 2. Go to the directory
 
-```bash
-cd MagicInvest
-```
+   ```bash
+   cd MagicInvest
+   ```
 
 3. (Optional) Create a Python virtual environment and activate it:
 
-```bash
-python -m venv .venv/ 
-```
+   ```bash
+   python -m venv .venv/ 
+   ```
 
-From Windows command prompt (i.e., cmd), activate the virtual environment by:
+   From Windows command prompt (i.e., cmd), activate the virtual environment by:
 
-```bash
-.venv/Scripts/activate
-```
+   ```bash
+   .venv/Scripts/activate
+   ```
 
 4. Install the required dependencies using pip:
-
-```bash
-pip install -r requirements.txt
-```
+   
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 
 ### Running the data scrapper
 
-To run the data scrapper the below line can be executed in the command line:
+To run the data scrapper:
 
-```
+```bash
 python main.py
 ```
 
-When the `main.py` executed in this way, it runs with its default settings. With the default settings, the parameters desired to be scrapped is selected by the user via a GUI, then all scrappings is saved to "output.csv" in the current directory.  
+#### Arguments of main.py
 
-However, this is not the only way to execute `main.py`. It can also be executed by providing arguments which are explained below:
-
-`--parameters-path
+- `
+--parameters-path
 `
- :Input of this argument is the path to the .JSON file 
+ :Input of this argument is the path to the JSON file 
 which stores the parameters to be scrapped. 
-User can avoid using the GUI by creating a .JSON file 
+User can avoid using the GUI by creating a JSON file 
 (storing parameters to be scrapped) and providing 
-its path via command line. Please note that, the format of the .JSON file should
-be as given below:
+its path via command line. 
 
-```json
-["param1", "param2", "...", "paramN"]
+   Format of the JSON file:
+
+   ```json
+   ["param1", "param2", "...", "paramN"]
+   ```
+
+- `
+--output-csv
+`
+ :Input of this argument is the name of the csv file in which
+scrapped parameters to be saved. Default name of csv = `output.csv`
+
+- `
+--logging-level
+`
+:Input of this argument controls the logging level of Logger object. 
+The valid arguments are ["none", "info", "debug"]. Default level = `none`
+
+
+Example usage with the arguments:
+
+```bash
+python main.py --parameters-path this/is/my/path.JSON --output-csv my_file.csv --logging-level none
 ```
-
-`--output-csv
-`
- :Input of this argument is the name of the .CSV file in which scrapped parameters to be saved.
-
-`--logging-level
-`
-:Input of this argument controls the logging level of Logger object. The valid arguments are ["none", "info", "debug"].
-
-
-Example usage of the arguments are given below:
-
-`python main.py --parameters-path this/is/my/path.JSON --output-csv my_file.csv --logging-level none
-`
 ## Note To Developers
 
-Developers should use the same code checking tools that are being used by the Github actions. Those are automatically configured using configuration files in the repository and all the tools and plugins can be downloaded using:
+Developers should use the same code checking tools that are being used by the GitHub actions. Those are automatically configured using configuration files in the repository and all the tools and plugins can be downloaded using:
 
 ```bash
 pip install -r dev_requirements.txt
@@ -117,6 +115,8 @@ pip install -r dev_requirements.txt
 
 Unit tests for the package are available in the `tests/` directory. To run the tests, use the following command:
 
-`python -m unittest discover -v tests`
+```bash
+python -m unittest discover -v tests
+```
 
 Note that some of the GUI-related tests are causing display errors(in remote server); therefore, they are not implemented yet.
