@@ -1,5 +1,20 @@
 # MacroTrend data scrapper
 
+Motivation: This package is designed to learn and
+implement web scrapping.
+
+Pros: Clever csv file update. 
+Imagine you would like to scrap some parameters, and apply
+some operations to them to obtain some result. You determined
+your scrap parameters, those were scrapped and saved. Then, you
+realized that you forgot to add some parameters to your scrap
+parameters. In this case, it is not necessary to rescrap everything
+including the parameters you forgot. Simply, scrap what you forgot
+it will be automatically added as an extra column to existing csv file.
+
+Limitations: This scrapper is designed to perform scrapping only
+on stock screen table.
+
 Package for scrapping the desired data from the [MacroTrend stocks screner](https://www.macrotrends.net/stocks/stock-screener) and saving it into a `.csv` file.
 
 ![alt text](readme_images/tableExplainer.png)
