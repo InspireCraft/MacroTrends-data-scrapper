@@ -1,26 +1,15 @@
 # MacroTrend data scrapper
 
-Package to be used to scrap the desired data in the table given in 
-[MacroTrend](https://www.macrotrends.net/stocks/stock-screener) 
-
+Package for scrapping the desired data from the [MacroTrend stocks screner](https://www.macrotrends.net/stocks/stock-screener) and saving it into a `.csv` file.
 
 ![alt text](readme_images/tableExplainer.png)
 
-
-This packages enable users to scrap all (or some) of the data. 
-Then save the recorded data into a `.csv`.
+An example of the scrapped data in a `.csv` file is given below.
 
 ![alt text](readme_images/excel.PNG)
 
 First column and the second column of the `.csv` are always
-set to "Ticker" and "name" respectively.
-
-
-When `main.py` is executed, a GUI appears  to select which parameters 
-to be scrapped. 
-
-![alt text](readme_images/parameterGUI.PNG)
-
+set to `Ticker` and `name`, respectively.
 
 ## Installation
 
@@ -32,9 +21,10 @@ to be scrapped.
 
 1. Clone this repository to your local machine
 
-   ```bash 
-   git clone git@github.com:AlpSari/MagicInvest.git 
+   ```bash
+   git clone git@github.com:AlpSari/MagicInvest.git
    ```
+
 2. Go to the directory
 
    ```bash
@@ -44,7 +34,7 @@ to be scrapped.
 3. (Optional) Create a Python virtual environment and activate it:
 
    ```bash
-   python -m venv .venv/ 
+   python -m venv .venv/
    ```
 
    From Windows command prompt (i.e., cmd), activate the virtual environment by:
