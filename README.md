@@ -119,7 +119,7 @@ parameters to be scrapped) and providing its path via this argument.
 Example usage with the arguments:
 
 ```bash
-python main.py --parameters-path this/is/my/path.JSON --output-csv my_file.csv --logging-level none
+python main.py --parameters-path example/example_parameters.json --output-csv my_file.csv --logging-level none
 ```
 
 ## Note To Developers
