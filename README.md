@@ -35,15 +35,15 @@ of:
 
  -**partial scrapping**: Same output file can be used to scrap different
 parameters in different runs. This feature is implemented because often
-scrapping all the parameters in a single run can take a long time and it might be
-desired to scrap parameters in multiple runs. This feature offers re-usability.
+scrapping all the parameters in a single run can take a long time and it might
+be desired to scrap parameters in multiple runs. This feature offers
+re-usability.
 
-   -Example: You succesfully scrapped all the `Market Cap` data into
+   *Example:* You succesfully scrapped all the `Market Cap` data into
    `output.csv` and would like to also scrap `Dividend Yield`. Targeting
    `output.csv` to scrap `Dividend Yield` will append the `Dividend Yield` next
    to the already existing `Market Cap`. This allows to use the data scrapper
-   multiple times with subset of parameters but .
-
+   multiple times with subset of parameters.
 
 ## Installation
 
