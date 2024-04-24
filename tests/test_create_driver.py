@@ -1,6 +1,6 @@
 import unittest
-from src.utils.create_driver import create_driver
-from src.utils.Logger import Logger
+from macrotrends_data_scrapper.utils.create_driver import create_driver
+from macrotrends_data_scrapper.utils.Logger import Logger
 import selenium
 
 

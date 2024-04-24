@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-from src.scrap_the_table import TableScrapper
+from macrotrends_data_scrapper.scrap_the_table import TableScrapper
 
 
 def main():

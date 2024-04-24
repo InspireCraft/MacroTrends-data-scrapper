@@ -2,7 +2,7 @@ import csv
 import os
 import unittest
 
-from src.data_recorder import DataRecorder
+from macrotrends_data_scrapper.data_recorder import DataRecorder
 
 
 class TestDataRecorder(unittest.TestCase):

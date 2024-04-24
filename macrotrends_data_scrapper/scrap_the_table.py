@@ -4,11 +4,11 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
 
-from src.map_of_headers import MAP_OF_HEADERS
-from src.data_recorder import DataRecorder
-from src.utils.Logger import Logger
-from src.utils.manage_driver import DriverManager
-from src.gui_scrap_the_table import TableScrapperGUI
+from macrotrends_data_scrapper.map_of_headers import MAP_OF_HEADERS
+from macrotrends_data_scrapper.data_recorder import DataRecorder
+from macrotrends_data_scrapper.utils.Logger import Logger
+from macrotrends_data_scrapper.utils.manage_driver import DriverManager
+from macrotrends_data_scrapper.gui_scrap_the_table import TableScrapperGUI
 
 
 class TableScrapper:
