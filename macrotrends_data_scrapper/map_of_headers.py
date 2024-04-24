@@ -20,7 +20,7 @@ MAP_OF_HEADERS = {
     "6 Month % Change": {"performance_st": 4},
     "YTD % Change": {"performance_st": 5},
     "Price vs 50D SMA": {"performance_st": 7},
-    "Pricec vs 200D SMA": {"performance_st": 8},
+    "Price vs 200D SMA": {"performance_st": 8},
 
     "3 Year CAGR %": {"performance_lt": 1},
     "5 Year CAGR %": {"performance_lt": 2},

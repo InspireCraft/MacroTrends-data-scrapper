@@ -1,5 +1,5 @@
 import unittest
-from src.utils.manage_driver import DriverManager
+from macrotrends_data_scrapper.utils.manage_driver import DriverManager
 
 
 class TestManageDriver(unittest.TestCase):

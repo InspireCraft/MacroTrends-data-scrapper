@@ -1,6 +1,6 @@
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
-from src.utils.Logger import Logger
+from macrotrends_data_scrapper.utils.Logger import Logger
 import json
 import os
 

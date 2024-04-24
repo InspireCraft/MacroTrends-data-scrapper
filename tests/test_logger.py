@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from src.utils.Logger import Logger
+from macrotrends_data_scrapper.utils.Logger import Logger
 
 
 class TestLogger(unittest.TestCase):

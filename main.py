@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-from src.scrap_the_table import TableScrapper
+from macrotrends_data_scrapper.scrap_the_table import TableScrapper
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
         '--logging-level',
         dest='logger_level',
         metavar='LOGGING_LEVEL_STRING',
-        help='Logging level of the game, one of ["none", "info", "debug"]',
+        help='Logging level of the datascrapper, one of ["none", "info", "debug"]',
         default="none",
         choices=["none", "info", "debug"],
     )

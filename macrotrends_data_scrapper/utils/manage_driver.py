@@ -1,4 +1,4 @@
-from src.utils.create_driver import create_driver
+from macrotrends_data_scrapper.utils.create_driver import create_driver
 
 
 class DriverManager:

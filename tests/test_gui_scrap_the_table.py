@@ -2,7 +2,7 @@ import unittest
 import tkinter as tk
 import os
 
-from src.gui_scrap_the_table import TableScrapperGUI
+from macrotrends_data_scrapper.gui_scrap_the_table import TableScrapperGUI
 
 
 class TestCreateDriver(unittest.TestCase):
