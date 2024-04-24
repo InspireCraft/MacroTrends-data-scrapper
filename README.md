@@ -1,21 +1,8 @@
-# MacroTrend data scrapper
+# MacroTrends data scrapper
 
-Motivation: This package is designed to learn and
-implement web scrapping.
+Package for scrapping the desired data from the [MacroTrends stocks screner](https://www.macrotrends.net/stocks/stock-screener) and saving it into a `.csv` file.
 
-Pros: Clever csv file update. 
-Imagine you would like to scrap some parameters, and apply
-some operations to them to obtain some result. You determined
-your scrap parameters, those were scrapped and saved. Then, you
-realized that you forgot to add some parameters to your scrap
-parameters. In this case, it is not necessary to rescrap everything
-including the parameters you forgot. Simply, scrap what you forgot
-it will be automatically added as an extra column to existing csv file.
-
-Limitations: This scrapper is designed to perform scrapping only
-on stock screen table.
-
-Package for scrapping the desired data from the [MacroTrend stocks screner](https://www.macrotrends.net/stocks/stock-screener) and saving it into a `.csv` file.
+Table being scrapped is shown below. The annotations are added to match the variable names used in the code.
 
 ![alt text](readme_images/tableExplainer.png)
 
@@ -25,6 +12,38 @@ An example of the scrapped data in a `.csv` file is given below.
 
 First column and the second column of the `.csv` are always
 set to `Ticker` and `name`, respectively.
+
+      Note: This scrapper is designed to perform scrapping only
+      on stock screener table on the MacroTrends website.
+
+**Motivation**: This package is designed to learn and
+implement web scrapping.
+
+## Features
+
+Scrapper will take care of saving the data to the same `.csv` file in the case
+of:
+
+ -**pre-termination**: This feature offers robustness when operation is
+ terminated unexpectedly or manually.
+
+   *Example:* Suppose scrapping operation is terminated halfway while `Market Cap`
+   data of companies are being saved to `output.csv`. Selecting the `Market Cap`
+   again (and possibly with other parameters) and targeting `output.csv` will
+   result in the right behaviour that the code will recognize previously `Market
+   Cap` was partially scrapped and handle the ordering of the data.
+
+ -**partial scrapping**: Same output file can be used to scrap different
+parameters in different runs. This feature is implemented because often
+scrapping all the parameters in a single run can take a long time and it might be
+desired to scrap parameters in multiple runs. This feature offers re-usability.
+
+   -Example: You succesfully scrapped all the `Market Cap` data into
+   `output.csv` and would like to also scrap `Dividend Yield`. Targeting
+   `output.csv` to scrap `Dividend Yield` will append the `Dividend Yield` next
+   to the already existing `Market Cap`. This allows to use the data scrapper
+   multiple times with subset of parameters but .
+
 
 ## Installation
 
